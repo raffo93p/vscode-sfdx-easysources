@@ -129,6 +129,9 @@ export class EasySourcesPanel {
 				<link rel="stylesheet" type="text/css" href="${styleUri}">
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';style-src vscode-resource: 'unsafe-inline' http: https: data:;">
 				<base href="${Uri.file(path.join(this._extensionPath, "react-easysources", 'build')).with({ scheme: 'vscode-resource' })}/">
+        <script>
+          window.acquireVsCodeApi = acquireVsCodeApi;
+			  </script>
 			</head>
 
 			<body>
@@ -161,6 +164,10 @@ export class EasySourcesPanel {
           // are created within the webview context (i.e. inside src/webview/main.ts)
           case "ciao":
             console.log('ciao');
+            window.showInformationMessage(text);
+            return;
+          case "squarePushed":
+            console.log('squarePushed');
             window.showInformationMessage(text);
             return;
           default:
