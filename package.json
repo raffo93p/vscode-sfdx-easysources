@@ -41,5 +41,8 @@
     "eslint": "^8.56.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "sfdx-easy-sources": "^0.5.0"
   }
 }

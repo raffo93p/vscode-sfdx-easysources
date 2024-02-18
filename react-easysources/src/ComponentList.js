@@ -110,7 +110,7 @@ export default function ComponentList({selectedMetadataType,isShowChildren}) {
           />
           {/*Added for #35*/}
           <Paper style={{maxHeight: 500, overflow: 'auto'}}>
-          {/* <FormGroup>
+          <FormGroup>
             {
                 selectedMetadataType.children.map(child=>{
                  
@@ -131,7 +131,7 @@ export default function ComponentList({selectedMetadataType,isShowChildren}) {
     
             }
             
-          </FormGroup> */}
+          </FormGroup>
           </Paper>
           {/*Added for #35*/}
           </CardContent>
