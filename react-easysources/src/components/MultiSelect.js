@@ -12,7 +12,7 @@ export default function MultiSelect({metadata, optionList, selectedOptions, setS
 
   return (
     <div className="app">
-      <p>Select your {metadata}</p>
+      <p>Available {metadata}</p>
       <div className="dropdown-container">
         <Select
          closeMenuOnSelect={false}
