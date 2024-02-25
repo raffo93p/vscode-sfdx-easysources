@@ -1,3 +1,4 @@
+import { vscode } from '..';
 import { calculateCommand } from '../utils/CmdCalculator';
 
 export const reducer = (state, action) => {
@@ -6,6 +7,7 @@ export const reducer = (state, action) => {
             //return {...state};
             return {
                 ...state,
+                ...action.payload,
                 command: calculateCommand(state)
             }
         case 'CALCULATE_COMMAND':

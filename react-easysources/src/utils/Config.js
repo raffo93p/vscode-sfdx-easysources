@@ -76,108 +76,40 @@ export const optionsAct = {
     ]
 }
 
+function actionBasicParams(sort, canSelectInput) {
+    if(canSelectInput){
+        return {
+            'split': {'sort': sort, 'selectInput': false},
+            'upsert': {'sort': sort, 'selectInput': false},
+            'updatekey': {'sort': sort, 'selectInput': false},
+            'merge': {'sort': sort, 'selectInput': false}
+        }
+    } else {
+        return {
+            'split': {'sort': sort},
+            'upsert': {'sort': sort},
+            'updatekey': {'sort': sort},
+            'merge': {'sort': sort}
+        }
+    }
+    
+    
+}
 
 
 export const metadataAction_params = {
-    'applications': {
-        'split': {
-            'sort': true,
-            'selectInput': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectInput': false
-        },
-        'updatekey': {
-            'sort': true,
-            'selectInput': false
-        },
-        'merge': {
-            'sort': true,
-            'selectInput': false
-        }
-    },
-    'globalvaluesets': {
-        'split': {
-            'sort': true,
-            'selectInput': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectInput': false
-        },
-        'updatekey': {
-            'sort': true,
-            'selectInput': false
-        },
-        'merge': {
-            'sort': true,
-            'selectInput': false
-        }
-    },
-    'globalvaluesettranslations': {
-        'split': {
-            'sort': true,
-            'selectInput': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectInput': false
-        },
-        'updatekey': {
-            'sort': true,
-            'selectInput': false
-        },
-        'merge': {
-            'sort': true,
-            'selectInput': false
-        }
-    },
-    'labels': {
-        'split': {
-            'sort': true
-        },
-        'upsert': {
-            'sort': true
-        },
-        'updatekey': {
-            'sort': true
-        },
-        'merge': {
-            'sort': true
-        }
-    },
+    'applications': { ...actionBasicParams(true, true)},
+    'globalvaluesets': { ...actionBasicParams(false, true)},
+    'globalvaluesettranslations': { ...actionBasicParams(false, true)},
+    'labels': { ...actionBasicParams(true, false)},
     'objecttranslations': {
-        'split': {
-            'sort': true,
-            'selectInput': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectInput': false
-        },
-        'minify': {
-            'sort': true,
-            'selectInput': false
-        },
-        'merge': {
-            'sort': true,
-            'selectInput': false
-        }
+        'split': {'sort': true, 'selectInput': false},
+        'upsert': {'sort': true, 'selectInput': false},
+        'minify': {'sort': true, 'selectInput': false},
+        'merge': {'sort': true, 'selectInput': false},
     },
     'permissionsets': {
-        'split': {
-            'sort': true,
-            'selectInput': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectInput': false
-        },
-        'updatekey': {
-            'sort': true,
-            'selectInput': false
-        },
+        ...actionBasicParams(true, true),
         'delete': {
             'sort': true,
             'selectInput': false,
@@ -185,10 +117,7 @@ export const metadataAction_params = {
             'type': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}],
             'tagid': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}]
         },
-        'minify': {
-            'sort': true,
-            'selectInput': false
-        },
+        'minify': {'sort': true, 'selectInput': false},
         'clean': {
             'sort': true,
             'selectInput': false,
@@ -199,35 +128,17 @@ export const metadataAction_params = {
             'include-standard-tabs': false,
             'skip-manifest-creation': false,
             'skip-types': ['Settings'] // TODO
-        },
-        'merge': {
-            'sort': true,
-            'selectInput': false
         }
     },
     'profiles': {
-        'split': {
-            'sort': true,
-            'selectInput': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectInput': false
-        },
-        'updatekey': {
-            'sort': true,
-            'selectInput': false
-        },
+        ...actionBasicParams(true, true),
         'delete': {
             'sort': true,
             'selectInput': false,
             'type': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}],
             'tagid': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}]
         },
-        'minify': {
-            'sort': true,
-            'selectInput': false
-        },
+        'minify': {'sort': true, 'selectInput': false},
         'clean': {
             'sort': true,
             'selectInput': false,
@@ -238,43 +149,15 @@ export const metadataAction_params = {
             'include-standard-tabs': false,
             'skip-manifest-creation': false,
             'skip-types': ['Settings'] // TODO
-        },
-        'merge': {
-            'sort': true,
-            'selectInput': false
         }
     },
     'recordtypes': {
-        'split': {
-            'sort': true,
-            'selectObject': false,
-            'selectRecordtype': false
-        },
-        'upsert': {
-            'sort': true,
-            'selectObject': false,
-            'selectRecordtype': false
-        },
-        'updatekey': {
-            'sort': true,
-            'selectObject': false,
-            'selectRecordtype': false
-        },
-        'delete': {
-            'sort': true,
-            'selectObject': false,
-            'selectRecordtype': false
-        },
-        'clean': {
-            'sort': true,
-            'selectObject': false,
-            'selectRecordtype': false
-        },
-        'merge': {
-            'sort': true,
-            'selectObject': false,
-            'selectRecordtype': false
-        }
+        'split': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'upsert': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'updatekey': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'delete': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'clean': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'merge': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
     },
 
 }

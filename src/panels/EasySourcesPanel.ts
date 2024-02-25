@@ -2,7 +2,8 @@ import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionCo
 import { getUri } from "../utilities/getUri";
 import * as path from 'path';
 import { getNonce } from "../utilities/getNonce";
-
+import { applications } from "../mock/Mock";
+import { getMetadataList } from "../utilities/selectUtils";
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
  *
@@ -169,6 +170,15 @@ export class EasySourcesPanel {
           case "squarePushed":
             console.log('squarePushed');
             window.showInformationMessage(text);
+            return;
+          case "GET_METADATA_INPUT_LIST":
+            console.log('GET_METADATA_INPUT_LIST');
+            window.showInformationMessage(JSON.stringify(message.metadata));
+
+            window.showInformationMessage(JSON.stringify(applications));
+
+
+            this._panel.webview.postMessage({ command: 'GET_METADATA_INPUT_LIST_RESPONSE', metadataList : getMetadataList(message.metadata)});
             return;
           default:
               break;

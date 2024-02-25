@@ -4,10 +4,18 @@
 import { applications, globalvaluesets, globalvaluesettranslations, objecttranslations, permissionsets, profiles, recordtypes, translations, objects } from "./Mock";
 
 // used when 'select input' is selected
-export function getMetadataInputList(metadata) {
+export function getMetadataInputList(metadata, vscode) {
+    console.log('getMetadataInputList: ' + metadata);
+
     switch (metadata) {
+        
         case 'applications':
-            return applications
+            if(vscode) {
+                vscode.postMessage({ command: 'GET_METADATA_INPUT_LIST', metadata: metadata });
+                return [];
+            } else {
+                return applications;
+            }
         case 'globalvaluesets':
             return globalvaluesets;
         case 'globalvaluesettranslations':

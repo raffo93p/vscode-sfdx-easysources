@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer}  from 'react';
+import React, { createContext, useContext, useReducer, useEffect}  from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Grid, Checkbox, FormControlLabel} from '@mui/material';
 
 import logo from './assets/EasySources_Logo.png';
@@ -9,6 +9,8 @@ import './App.css';
 import MultiSelect from './components/MultiSelect';
 import {reducer} from "./context/reducer";
 import { vscode } from "./index";
+
+import { createMuiTheme, makeStyles, ThemeProvider } from '@mui/styles';
 
 
 export const GlobalContext = createContext();
@@ -21,13 +23,23 @@ function App() {
         selectInput: null,
         selectedInput: null,
         selectObject: null,
-        selectedObject: null,
+        selectedObject: '',
         selectRecordtype: null,
         selectedRecordtype: null,
         metadata: '',
         action: '',
-        sort: null
+        sort: null,
+        availableInput: [],
     });
+
+    const element = document.querySelector("body");
+    const prefersDarkMode = element.classList.contains("vscode-dark");
+    const preferredTheme = createMuiTheme({
+        palette: {
+          // Switching the dark mode on is a single property value change.
+          type: prefersDarkMode ? 'dark' : 'light',
+        },
+      });
 
     return (
         <GlobalContext.Provider value={{ globalState, dispatch }}>
@@ -75,9 +87,10 @@ function GeneralForm(){
             globalState.selectedInput = null;
             globalState.selectObject = null;
             globalState.selectRecordtype = null;
-            globalState.selectedObject = null;
+            globalState.selectedObject = '';
             globalState.selectedRecordtype = null;
             
+            globalState.availableInput = [];
         }
 
         if(whatSelect === "action"){
@@ -94,6 +107,9 @@ function GeneralForm(){
 
     const handleChangeCheckbox = (event, whatCheckbox) => {
         globalState[whatCheckbox] = event.target.checked;
+        if(whatCheckbox === "selectInput" && event.target.checked){
+            globalState.availableInput = getMetadataInputList(globalState.metadata, globalState.vscode);
+        }
         dispatch({type: 'UPDATE_STATE'});
     }
 
@@ -106,6 +122,32 @@ function GeneralForm(){
         globalState["selectedRecordtype"] = selected;
         dispatch({type: 'UPDATE_STATE'});
     }
+
+    useEffect(()=>{
+        console.log('Inside messageEventListener useEffect() App.js');
+          const messageEventListener= (event) => {
+            const message = event.data; // The json data that the extension sent
+            //console.log(event.data);
+            switch (message.command) {
+                case 'GET_METADATA_INPUT_LIST_RESPONSE':
+                    console.log('GET_METADATA_INPUT_LIST_RESPONSE');
+                    console.log(JSON.stringify(message.metadataList));
+                    //globalState.availableInput = message.metadataList;
+                    dispatch({type: 'UPDATE_STATE', payload: {availableInput: message.metadataList}});
+                    break;
+                
+      
+                default:
+                  break;
+                
+            }
+          }
+      
+          window.addEventListener('message', messageEventListener);
+          return ()=>{
+            window.removeEventListener('message', messageEventListener);
+          };
+      },[globalState.vscode]);
     
     
         return(
@@ -159,7 +201,7 @@ function GeneralForm(){
                         <div>
                             <MultiSelect 
                                 metadata = {globalState.metadata}
-                                optionList={getMetadataInputList(globalState.metadata)}
+                                optionList={globalState.availableInput}
                                 selectedOptions={globalState.selectedInput}
                                 setSelectedOptions={setSelected}
                             />
@@ -180,7 +222,7 @@ function GeneralForm(){
                         { globalState.selectObject ? 
                             <MySelect 
                                     label="Object"
-                                    options={getMetadataInputList("object")}
+                                    options={getMetadataInputList("object", globalState.vscode)}
                                     value={globalState.selectedObject}
                                     onChange={(event) => handleChangeSelect(event, "selectedObject")}
                                 />
