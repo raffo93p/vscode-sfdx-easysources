@@ -4,39 +4,35 @@
 import { applications, globalvaluesets, globalvaluesettranslations, objecttranslations, permissionsets, profiles, recordtypes, translations, objects } from "./Mock";
 
 // used when 'select input' is selected
-export function getMetadataInputList(metadata, vscode) {
+export function getMetadataInputList(metadata, vscode, selectedObject) {
     console.log('getMetadataInputList: ' + metadata);
 
-    switch (metadata) {
-        
-        case 'applications':
-            if(vscode) {
-                vscode.postMessage({ command: 'GET_METADATA_INPUT_LIST', metadata: metadata });
-                return [];
-            } else {
-                return applications;
-            }
-        case 'globalvaluesets':
-            return globalvaluesets;
-        case 'globalvaluesettranslations':
-            return globalvaluesettranslations;
-        case 'labels':
-            // will never be used since the select input feature is not provided
-            return;
-        case 'objecttranslations':
-            return objecttranslations;
-        case 'permissionsets':
-            return permissionsets;
-        case 'profiles':
-            return profiles;
-        case 'object':
-            return objects;
-        case 'recordtypes':
-            return recordtypes;
-        case 'translations':
-            return translations;
-        default:
-            return;
+    const metadataMap = {
+        applications,
+        globalvaluesets,
+        globalvaluesettranslations,
+        objecttranslations,
+        permissionsets,
+        profiles,
+        object: objects,
+        recordtypes,
+        translations
+    };
+
+    if (metadata === 'labels') {
+        // will never be used since the select input feature is not provided
+        return;
     }
+
+    if (metadataMap.hasOwnProperty(metadata)) {
+        if (vscode) {
+            vscode.postMessage({ command: 'GET_METADATA_INPUT_LIST', metadata, objectName: selectedObject });
+            return [];
+        } else {
+            return metadataMap[metadata];
+        }
+    }
+
+    return;
 
 }

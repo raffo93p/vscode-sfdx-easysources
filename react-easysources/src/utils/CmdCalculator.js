@@ -1,7 +1,7 @@
 import { isBlank } from './StringUtils';
 
 export function calculateCommand(state){
-    const sfCmd = 'sfdx';
+    const sfCmd = 'sf ';
 
     if(isBlank(state.metadata) || isBlank(state.action)){
         return '';
@@ -9,9 +9,9 @@ export function calculateCommand(state){
 
  
 
-    var cmdString = `${sfCmd} easysources:${state.metadata}:${state.action}`;
+    var cmdString = `${sfCmd} easysources ${state.metadata} ${state.action}`;
 
-    cmdString = `${cmdString} ----sort=${state.sort}`;
+    cmdString = `${cmdString} ----sort ${state.sort}`;
 
     if(state.selectInput && state.selectedInput && state.selectedInput.length > 0){
         var selectedInput = state.selectedInput.map((input) => {
@@ -23,20 +23,13 @@ export function calculateCommand(state){
     if(state.selectObject && state.selectedObject && state.selectedObject.length > 0){
         cmdString = `${cmdString} ----object "${state.selectedObject}"`;
 
+        if(state.selectRecordtype && state.selectedRecordtype && state.selectedRecordtype.length > 0){
+            var selectedRecordtype = state.selectedRecordtype.map((input) => {
+                return input.value;
+            }).sort().join(',');
+            cmdString = `${cmdString} ----recordtype "${selectedRecordtype}"`;
+        }
     }
-
-    if(state.selectRecordtype && state.selectedRecordtype && state.selectedRecordtype.length > 0){
-        var selectedRecordtype = state.selectedRecordtype.map((input) => {
-            return input.value;
-        }).sort().join(',');
-        cmdString = `${cmdString} ----recordtype "${selectedRecordtype}"`;
-    }
-
-
-
-
-        
-    
 
     return cmdString;
 

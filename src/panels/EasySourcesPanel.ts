@@ -1,6 +1,7 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext} from "vscode";
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext, workspace} from "vscode";
 import { getUri } from "../utilities/getUri";
 import * as path from 'path';
+import * as fs from 'fs';
 import { getNonce } from "../utilities/getNonce";
 import { applications } from "../mock/Mock";
 import { getMetadataList } from "../utilities/selectUtils";
@@ -173,12 +174,24 @@ export class EasySourcesPanel {
             return;
           case "GET_METADATA_INPUT_LIST":
             console.log('GET_METADATA_INPUT_LIST');
-            window.showInformationMessage(JSON.stringify(message.metadata));
+            console.log('Message: ', message, 'objectName:', message.objectName);
 
-            window.showInformationMessage(JSON.stringify(applications));
+            const workspaceFolder = workspace.workspaceFolders?.[0];
+            if (!workspaceFolder) {
+              this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
+              return;
+            }
+            const workspacePath = workspaceFolder.uri.fsPath;
 
-
-            this._panel.webview.postMessage({ command: 'GET_METADATA_INPUT_LIST_RESPONSE', metadataList : getMetadataList(message.metadata)});
+            this._panel.webview.postMessage({ 
+              command: 'GET_METADATA_INPUT_LIST_RESPONSE', 
+              metadata: message.metadata,
+              metadataList : getMetadataList(workspacePath, message.metadata, message.objectName)
+            });
+            return;
+          case "READ_SETTINGS_FILE":
+            console.log('READ_SETTINGS_FILE');
+            this._readSettingsFile();
             return;
           default:
               break;
@@ -187,6 +200,45 @@ export class EasySourcesPanel {
       undefined,
       this._disposables
     );
+  }
+
+  private _readSettingsFile() {
+    try {
+      // Prova a trovare il workspace corrente
+      const workspaceFolder = workspace.workspaceFolders?.[0];
+      if (!workspaceFolder) {
+        this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
+        return;
+      }
+
+      // Costruisce il percorso del file settings
+      const settingsPath = path.join(workspaceFolder.uri.fsPath, 'easysources-settings.json');
+      
+      // Verifica se il file esiste
+      if (fs.existsSync(settingsPath)) {
+        // Legge il contenuto del file
+        const settingsContent = fs.readFileSync(settingsPath, 'utf8');
+        try {
+          // Prova a parsare il JSON per verificare che sia valido
+          const parsedSettings = JSON.parse(settingsContent);
+          this._panel.webview.postMessage({ 
+            command: 'SETTINGS_FILE_CONTENT', 
+            content: JSON.stringify(parsedSettings, null, 2) 
+          });
+        } catch (parseError) {
+          // Se il JSON non è valido, invia comunque il contenuto raw
+          this._panel.webview.postMessage({ 
+            command: 'SETTINGS_FILE_CONTENT', 
+            content: settingsContent 
+          });
+        }
+      } else {
+        this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
+      }
+    } catch (error) {
+      console.error('Error reading settings file:', error);
+      this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
+    }
   }
 
   

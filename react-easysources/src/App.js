@@ -10,7 +10,7 @@ import MultiSelect from './components/MultiSelect';
 import {reducer} from "./context/reducer";
 import { vscode } from "./index";
 
-import { createMuiTheme, makeStyles, ThemeProvider } from '@mui/styles';
+import { createTheme, makeStyles, ThemeProvider } from '@mui/material/styles';
 
 
 export const GlobalContext = createContext();
@@ -30,18 +30,43 @@ function App() {
         action: '',
         sort: null,
         availableInput: [],
+        availableObjects: [],
+        availableRecordtypes: [],
     });
 
     const element = document.querySelector("body");
     const prefersDarkMode = element.classList.contains("vscode-dark");
-    const preferredTheme = createMuiTheme({
+    const preferredTheme = createTheme({
         palette: {
           // Switching the dark mode on is a single property value change.
-          type: prefersDarkMode ? 'dark' : 'light',
+          mode: prefersDarkMode ? 'dark' : 'light',
         },
       });
 
+    // Funzione per mostrare settings
+    const [settings, setSettings] = React.useState(null);
+
+    useEffect(() => {
+        // Prova a leggere il file easysources-settings.json tramite l'API VSCode
+        if (globalState.vscode && globalState.vscode.postMessage) {
+            globalState.vscode.postMessage({ command: 'READ_SETTINGS_FILE' });
+        }
+        // Listener per la risposta
+        const handler = (event) => {
+            const message = event.data;
+            if (message.command === 'SETTINGS_FILE_CONTENT') {
+                setSettings(message.content);
+            }
+            if (message.command === 'SETTINGS_FILE_NOT_FOUND') {
+                setSettings(null);
+            }
+        };
+        window.addEventListener('message', handler);
+        return () => window.removeEventListener('message', handler);
+    }, [globalState.vscode]);
+
     return (
+        <ThemeProvider theme={preferredTheme}>
         <GlobalContext.Provider value={{ globalState, dispatch }}>
             <div className="HomePage">
                 <header className="HomePage-header">
@@ -51,7 +76,7 @@ function App() {
                 </header>
                     
                 <div>
-                    <p>Welcome to the SFDX EasySources project. This is a test for the react-easysources project.</p>
+                    <p>Welcome to the SFDX EasySources project! This is a test for the react-easysources project.</p>
                     <GeneralForm />
                     
                 </div>
@@ -60,11 +85,12 @@ function App() {
                 <p>Info</p>
                 <p>Command: {globalState.command}</p>
                 <p>State: {JSON.stringify(globalState)}</p>
-
+                <p>Settings: {settings ? settings : 'Settings not found'}</p>
             </footer>
 
             </div>
         </GlobalContext.Provider>
+        </ThemeProvider>
     );
 }
 
@@ -91,16 +117,26 @@ function GeneralForm(){
             globalState.selectedRecordtype = null;
             
             globalState.availableInput = [];
+            globalState.availableObjects = [];
+            globalState.availableRecordtypes = [];
+        }
+
+        if(whatSelect === "selectedObject"){
+            // Quando si cambia oggetto, pulire i recordtypes
+            globalState.selectRecordtype = false;
+            globalState.selectedRecordtype = null;
+            globalState.availableRecordtypes = [];
         }
 
         if(whatSelect === "action"){
             const metadata = globalState.metadata;
             const action = event.target.value;
+            
             globalState.sort = metadataAction_params[metadata]?.[action]?.sort ?? null;
             globalState.selectInput = metadataAction_params[metadata]?.[action]?.selectInput ?? null;
             globalState.selectObject = metadataAction_params[metadata]?.[action]?.selectObject ?? null;
             globalState.selectRecordtype = metadataAction_params[metadata]?.[action]?.selectRecordtype ?? null;
-            
+
         }
         dispatch({type: 'UPDATE_STATE'});
     }
@@ -109,6 +145,12 @@ function GeneralForm(){
         globalState[whatCheckbox] = event.target.checked;
         if(whatCheckbox === "selectInput" && event.target.checked){
             globalState.availableInput = getMetadataInputList(globalState.metadata, globalState.vscode);
+        }
+        if(whatCheckbox === "selectRecordtype" && event.target.checked){
+            globalState.availableInput = getMetadataInputList(globalState.metadata, globalState.vscode, globalState.selectedObject);
+        }
+        if(whatCheckbox === "selectObject" && event.target.checked){
+            globalState.availableObjects = getMetadataInputList("object", globalState.vscode);
         }
         dispatch({type: 'UPDATE_STATE'});
     }
@@ -132,8 +174,14 @@ function GeneralForm(){
                 case 'GET_METADATA_INPUT_LIST_RESPONSE':
                     console.log('GET_METADATA_INPUT_LIST_RESPONSE');
                     console.log(JSON.stringify(message.metadataList));
-                    //globalState.availableInput = message.metadataList;
-                    dispatch({type: 'UPDATE_STATE', payload: {availableInput: message.metadataList}});
+                    // Determina se è per input generico, objects o recordtypes
+                    if (message.metadata === 'object') {
+                        dispatch({type: 'UPDATE_STATE', payload: {availableObjects: message.metadataList}});
+                    } else if (message.metadata === 'recordtypes') {
+                        dispatch({type: 'UPDATE_STATE', payload: {availableRecordtypes: message.metadataList}});
+                    } else {
+                        dispatch({type: 'UPDATE_STATE', payload: {availableInput: message.metadataList}});
+                    }
                     break;
                 
       
@@ -147,7 +195,7 @@ function GeneralForm(){
           return ()=>{
             window.removeEventListener('message', messageEventListener);
           };
-      },[globalState.vscode]);
+      },[globalState.vscode, dispatch]);
     
     
         return(
@@ -222,7 +270,7 @@ function GeneralForm(){
                         { globalState.selectObject ? 
                             <MySelect 
                                     label="Object"
-                                    options={getMetadataInputList("object", globalState.vscode)}
+                                    options={globalState.availableObjects}
                                     value={globalState.selectedObject}
                                     onChange={(event) => handleChangeSelect(event, "selectedObject")}
                                 />
@@ -231,26 +279,26 @@ function GeneralForm(){
 
                         {/* RecordType - Select RecordType */}
                         {
-                            globalState.selectObject && globalState.selectedObject ?
-                            <MyCheckbox
-                                // size = {3}
-                                checked={globalState.selectRecordtype}
-                                onChange={(event) => handleChangeCheckbox(event, "selectRecordtype")}
-                                label="Run on specific record types"
-                            /> 
-                        : null
+                            globalState.selectObject && globalState.selectedObject && globalState.selectedObject !== '' ?
+                            <div>
+                                <MyCheckbox
+                                    // size = {3}
+                                    checked={globalState.selectRecordtype}
+                                    onChange={(event) => handleChangeCheckbox(event, "selectRecordtype")}
+                                    label="Run on specific record types"
+                                />
+                            </div>
+                            : null
                         }
 
                         { globalState.selectObject && globalState.selectedObject && globalState.selectRecordtype ? 
                             <div>
                                 <MultiSelect 
-                                    metadata = {globalState.metadata}
-                                    optionList={getMetadataInputList(globalState.metadata)}
+                                    metadata = "recordtypes"
+                                    optionList={globalState.availableRecordtypes}
                                     selectedOptions={globalState.selectedRecordtype}
                                     setSelectedOptions={setSelectedRecordtype}
                                 />
-
-                                <p>Selected: {globalState.selectedRecordtype?.map((option) => option.label).join(", ")}</p>
                             </div>
                             : null
                         }
