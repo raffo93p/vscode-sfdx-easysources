@@ -186,7 +186,7 @@ export class EasySourcesPanel {
             this._panel.webview.postMessage({ 
               command: 'GET_METADATA_INPUT_LIST_RESPONSE', 
               metadata: message.metadata,
-              metadataList : getMetadataList(workspacePath, message.metadata, message.objectName)
+              metadataList : getMetadataList(workspacePath, message.settings, message.metadata, message.objectName)
             });
             return;
           case "READ_SETTINGS_FILE":
@@ -225,6 +225,7 @@ export class EasySourcesPanel {
             command: 'SETTINGS_FILE_CONTENT', 
             content: JSON.stringify(parsedSettings, null, 2) 
           });
+          console.log('Settings file content sent to webview: ', JSON.stringify(parsedSettings, null, 2));
         } catch (parseError) {
           // Se il JSON non è valido, invia comunque il contenuto raw
           this._panel.webview.postMessage({ 

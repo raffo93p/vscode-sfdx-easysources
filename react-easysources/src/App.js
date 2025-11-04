@@ -20,6 +20,8 @@ function App() {
 
     const [globalState, dispatch] = useReducer(reducer, {
         'vscode' : vscode,
+        settings: null,
+        command: null,
         selectInput: null,
         selectedInput: null,
         selectObject: null,
@@ -55,10 +57,11 @@ function App() {
         const handler = (event) => {
             const message = event.data;
             if (message.command === 'SETTINGS_FILE_CONTENT') {
-                setSettings(message.content);
+                //setSettings(message.content);
+                dispatch({type: 'UPDATE_STATE', payload: {settings: JSON.parse(message.content)}});
             }
             if (message.command === 'SETTINGS_FILE_NOT_FOUND') {
-                setSettings(null);
+                dispatch({type: 'UPDATE_STATE', payload: {settings: null}});
             }
         };
         window.addEventListener('message', handler);
@@ -85,7 +88,7 @@ function App() {
                 <p>Info</p>
                 <p>Command: {globalState.command}</p>
                 <p>State: {JSON.stringify(globalState)}</p>
-                <p>Settings: {settings ? settings : 'Settings not found'}</p>
+                <p>Settings: {globalState.settings ? JSON.stringify(globalState.settings) : 'Settings not found'}</p>
             </footer>
 
             </div>
@@ -144,13 +147,13 @@ function GeneralForm(){
     const handleChangeCheckbox = (event, whatCheckbox) => {
         globalState[whatCheckbox] = event.target.checked;
         if(whatCheckbox === "selectInput" && event.target.checked){
-            globalState.availableInput = getMetadataInputList(globalState.metadata, globalState.vscode);
+            globalState.availableInput = getMetadataInputList(globalState.settings, globalState.metadata, globalState.vscode);
         }
         if(whatCheckbox === "selectRecordtype" && event.target.checked){
-            globalState.availableInput = getMetadataInputList(globalState.metadata, globalState.vscode, globalState.selectedObject);
+            globalState.availableInput = getMetadataInputList(globalState.settings, globalState.metadata, globalState.vscode, globalState.selectedObject);
         }
         if(whatCheckbox === "selectObject" && event.target.checked){
-            globalState.availableObjects = getMetadataInputList("object", globalState.vscode);
+            globalState.availableObjects = getMetadataInputList(globalState.settings, "object", globalState.vscode);
         }
         dispatch({type: 'UPDATE_STATE'});
     }

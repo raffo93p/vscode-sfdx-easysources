@@ -4,7 +4,7 @@
 import { applications, globalvaluesets, globalvaluesettranslations, objecttranslations, permissionsets, profiles, recordtypes, translations, objects } from "./Mock";
 
 // used when 'select input' is selected
-export function getMetadataInputList(metadata, vscode, selectedObject) {
+export function getMetadataInputList(settings, metadata, vscode, selectedObject) {
     console.log('getMetadataInputList: ' + metadata);
 
     const metadataMap = {
@@ -26,7 +26,7 @@ export function getMetadataInputList(metadata, vscode, selectedObject) {
 
     if (metadataMap.hasOwnProperty(metadata)) {
         if (vscode) {
-            vscode.postMessage({ command: 'GET_METADATA_INPUT_LIST', metadata, objectName: selectedObject });
+            vscode.postMessage({settings, command: 'GET_METADATA_INPUT_LIST', metadata, objectName: selectedObject });
             return [];
         } else {
             return metadataMap[metadata];

@@ -2,7 +2,7 @@ import {readdirSync} from 'fs';
 import { join } from 'path';
 import { workspace } from 'vscode';
 
-export function getMetadataList(workspacePath: string, metadata : string, objectName?: string) {
+export function getMetadataList(workspacePath: string, settings: any, metadata : string, objectName?: string) {
     const metadataFolderMap: {[key: string]: string} = {
         'applications': 'applications/',
         'globalvaluesets': 'globalValueSets/',
@@ -29,7 +29,8 @@ export function getMetadataList(workspacePath: string, metadata : string, object
         'translations': 'translation-meta.xml',
     };
 
-    const defaultPath = 'assets/default/'; // todo leggere da settings file
+    const defaultPath = settings['salesforce-xml-path']; // todo gestire null
+    console.log('Default path from settings: ' + defaultPath);
     console.log('Getting metadata list for: ' + metadata);
     // read files from directory
     if(metadata === 'object') {
