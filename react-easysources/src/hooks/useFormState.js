@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { metadataAction_params } from '../utils/Config';
 import { getMetadataInputList } from '../utils/MdtSelectUtils';
 import { vscode } from '../index';
+import { useAppContext } from '../context/AppContext';
 
 /**
  * Hook per gestire lo stato del form principale
  */
 export function useFormState(settings) {
+  const { dispatch } = useAppContext();
+  
   const [formState, setFormState] = useState({
     metadata: '',
     action: '',
@@ -17,7 +20,7 @@ export function useFormState(settings) {
     selectedObject: null,
     selectRecordtype: null,
     selectedRecordtype: null,
-    viewDebugInfo: false,
+    viewDebugInfo: false
   });
 
   const updateField = (field, value) => {
@@ -45,8 +48,12 @@ export function useFormState(settings) {
       updates.selectedInput = null;
       updates.selectObject = null;
       updates.selectRecordtype = null;
-      updates.selectedObject = '';
+      updates.selectedObject = null;
       updates.selectedRecordtype = null;
+      
+      // Reset global state
+      dispatch({ type: 'RESET_EXECUTION_STATE' });
+      dispatch({ type: 'CLEAR_LISTS' });
     }
 
     if (whatSelect === "selectedObject") {
@@ -73,21 +80,18 @@ export function useFormState(settings) {
     const updates = { [whatCheckbox]: checked };
 
     if (whatCheckbox === "selectInput" && checked) {
-      // Load metadata input list
+      dispatch({ type: 'SET_LOADING', payload: true });
       getMetadataInputList(settings, formState.metadata, vscode);
-      // This would typically trigger a side effect to update availableInput
     }
 
     if (whatCheckbox === "selectRecordtype" && checked) {
-      // Load recordtype list for selected object
+      dispatch({ type: 'SET_LOADING', payload: true });
       getMetadataInputList(settings, formState.metadata, vscode, formState.selectedObject);
-      // This would typically trigger a side effect to update availableRecordtypes
     }
 
     if (whatCheckbox === "selectObject" && checked) {
-      // Load objects list
+      dispatch({ type: 'SET_LOADING', payload: true });
       getMetadataInputList(settings, "object", vscode);
-      // This would typically trigger a side effect to update availableObjects  
     }
 
     setFormState(prev => ({ ...prev, ...updates }));

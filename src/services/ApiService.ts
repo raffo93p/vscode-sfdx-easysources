@@ -3,7 +3,7 @@ import { SettingsService, EasySourcesSettings } from './SettingsService';
 // Import the sfdx-easy-sources API
 const {
   profiles, permissionSets, labels, applications, 
-  globalValueSets, globalValueSetTranslations, translations, recordTypes
+  globalValueSets, globalValueSetTranslations, objectTranslations, translations, recordTypes
 } = require('sfdx-easy-sources');
 
 export interface ApiExecutionParams {
@@ -22,6 +22,7 @@ export class ApiService {
     'applications': applications,
     'globalValueSets': globalValueSets,
     'globalValueSetTranslations': globalValueSetTranslations,
+    'objectTranslations': objectTranslations,
     'translations': translations,
     'recordTypes': recordTypes
   };

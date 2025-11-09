@@ -13,7 +13,7 @@ export class CommandService {
     'applications': 'applications',
     'globalvaluesets': 'globalValueSets',
     'globalvaluesettranslations': 'globalValueSetTranslations',
-    'objecttranslations': 'translations', // Object Translations usa la stessa API di Translations
+    'objecttranslations': 'objectTranslations', 
     'recordtypes': 'recordTypes',
     'translations': 'translations'
   };

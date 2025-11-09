@@ -5,21 +5,19 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from './assets/EasySources_Logo.png';
 import './App.css'; 
 import GeneralForm from './components/GeneralForm';
-import { useSettings, useApiExecution, useMetadataList } from './hooks/useSettings';
+import { useSettings, useApiExecution } from './hooks/useSettings';
 import { useFormState } from './hooks/useFormState';
+import { useAppContext, AppProvider } from './context/AppContext';
 import { vscode } from "./index";
 import MyCheckbox from './components/MyCheckbox';
 
 
-function App() {
+// Componente interno che usa il context
+function AppContent() {
   // Hooks per gestire lo stato dell'applicazione
   const { settings, workspacePath, isLoading } = useSettings();
-  const { isExecuting, executionResult, executionError, executeCommand } = useApiExecution();
-  const { 
-    availableInput, 
-    availableObjects, 
-    availableRecordtypes
-  } = useMetadataList();
+  const { executeCommand } = useApiExecution();
+  const { state } = useAppContext(); // Otteniamo il global state
   
   const { 
     formState, 
@@ -28,6 +26,16 @@ function App() {
     setSelectedInput,
     setSelectedRecordtype
   } = useFormState(settings);
+
+  // Estraiamo i dati dal global state
+  const { 
+    availableInput, 
+    availableObjects, 
+    availableRecordtypes,
+    isExecuting,
+    executionResult,
+    executionError
+  } = state;
 
   // Theme configuration
   const element = document.querySelector("body");
@@ -110,5 +118,13 @@ function App() {
   );
 }
 
+// Componente App principale con Provider
+function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
+  );
+}
 
 export default App;
