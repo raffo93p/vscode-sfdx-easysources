@@ -1,16 +1,7 @@
-import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext, workspace} from "vscode";
-import { getUri } from "../utilities/getUri";
-import * as path from 'path';
-import * as fs from 'fs';
-import { getNonce } from "../utilities/getNonce";
-import { applications } from "../mock/Mock";
-import { getMetadataList } from "../utilities/selectUtils";
-
-// Import the sfdx-easy-sources API
-const {
-  profiles, permissionSets, labels, applications: applicationsApi, 
-  globalValueSets, globalValueSetTranslations, translations, recordTypes
-} = require('sfdx-easy-sources');
+import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionContext } from "vscode";
+import { WebviewMessageService } from '../services/WebviewMessageService';
+import { WebviewContentService } from '../services/WebviewContentService';
+import { MessageHandler } from '../handlers/MessageHandler';
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
  *
@@ -25,39 +16,32 @@ export class EasySourcesPanel {
   public static currentPanel: EasySourcesPanel | undefined;
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
-
-	private readonly _extensionPath: string;
+  private _messageService: WebviewMessageService;
+  private _messageHandler: MessageHandler;
+  private _contentService: WebviewContentService;
 
   /**
    * The EasySourcesPanel class private constructor (called only from the render method).
    *
    * @param panel A reference to the webview panel
-   * @param extensionUri The URI of the directory containing the extension
+   * @param context The extension context
    */
   private constructor(panel: WebviewPanel, context: ExtensionContext) {
     this._panel = panel;
 
-    this._extensionPath = context.extensionPath;
+    // Inizializza i servizi
+    this._messageService = new WebviewMessageService(this._panel.webview);
+    this._messageHandler = new MessageHandler(this._messageService);
+    this._contentService = new WebviewContentService(context);
 
-    // Set an event listener to listen for when the panel is disposed (i.e. when the user closes
-    // the panel or when the panel is closed programmatically)
+    // Set an event listener to listen for when the panel is disposed
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Set the HTML content for the webview panel
-    // this._panel.webview.html = this._getWebviewContent2(this._panel.webview, context.extensionUri);
-    // this._panel.webview.html = this._getWebviewContent3(this._panel.webview, context.extensionPath);
-
-    this._panel.webview.html = this.getWebviewContent('ciao');
-    // const htmlPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'html', 'webview.html');
-    // const htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
-
-    // this._panel.webview.html = htmlContent;
+    this._panel.webview.html = this._contentService.getWebviewContent();
 
     // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
-
-
- 
   }
 
   /**
@@ -117,238 +101,25 @@ export class EasySourcesPanel {
     }
   }
 
-  private getWebviewContent(filepath: string): string {
-    const manifest = require(path.join(this._extensionPath, "react-easysources", 'build', 'asset-manifest.json'));
-		const mainScript = manifest['files']['main.js'];
-		const mainStyle = manifest['files']['main.css'];
 
-		const scriptPathOnDisk = Uri.file(path.join(this._extensionPath, "react-easysources", 'build', mainScript));
-		const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' });
-		const stylePathOnDisk = Uri.file(path.join(this._extensionPath, "react-easysources", 'build', mainStyle));
-		const styleUri = stylePathOnDisk.with({ scheme: 'vscode-resource' });
-
-		// Use a nonce to whitelist which scripts can be run
-		const nonce = getNonce();
-
-		return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="utf-8">
-				<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-				<meta name="theme-color" content="#000000">
-				<title>React App</title>
-				<link rel="stylesheet" type="text/css" href="${styleUri}">
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';style-src vscode-resource: 'unsafe-inline' http: https: data:;">
-				<base href="${Uri.file(path.join(this._extensionPath, "react-easysources", 'build')).with({ scheme: 'vscode-resource' })}/">
-        <script>
-          window.acquireVsCodeApi = acquireVsCodeApi;
-			  </script>
-			</head>
-
-			<body>
-				<noscript>You need to enable JavaScript to run this app.</noscript>
-				<div id="root"></div>
-				<script nonce="${nonce}" src="${scriptUri}"></script>
-			</body>
-			</html>`;
-  }
 
 
   /**
-   * Sets up an event listener to listen for messages passed from the webview context and
-   * executes code based on the message that is recieved.
+   * Sets up an event listener to listen for messages passed from the webview context
    *
    * @param webview A reference to the extension webview
    */
   private _setWebviewMessageListener(webview: Webview) {
     webview.onDidReceiveMessage(
-      (message: any) => {
-        const command = message.command;
-        const text = message.text;
-
-        switch (command) {
-          case "hello":
-            // Code that should run in response to the hello message command
-            window.showInformationMessage(text);
-            return;
-          // Add more switch case statements here as more webview message commands
-          // are created within the webview context (i.e. inside src/webview/main.ts)
-          case "ciao":
-            console.log('ciao');
-            window.showInformationMessage(text);
-            return;
-          case "squarePushed":
-            console.log('squarePushed');
-            window.showInformationMessage(text);
-            return;
-          case "DEBUG_LOG":
-            console.log('DEBUG_LOG');
-            console.log(message.data);
-            return;
-          case "GET_METADATA_INPUT_LIST":
-            console.log('GET_METADATA_INPUT_LIST');
-            console.log('Message: ', message, 'objectName:', message.objectName);
-
-            const workspaceFolder = workspace.workspaceFolders?.[0];
-            if (!workspaceFolder) {
-              this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
-              return;
-            }
-            const workspacePath = workspaceFolder.uri.fsPath;
-
-            this._panel.webview.postMessage({ 
-              command: 'GET_METADATA_INPUT_LIST_RESPONSE', 
-              metadata: message.metadata,
-              metadataList : getMetadataList(workspacePath, message.settings, message.metadata, message.objectName)
-            });
-            return;
-          case "READ_SETTINGS_FILE":
-            console.log('READ_SETTINGS_FILE');
-            this._readSettingsFile();
-            return;
-          case "EXECUTE_API":
-            console.log('EXECUTE_API');
-            this._executeApiCommand(message);
-            return;
-          default:
-              break;
-        }
+      async (message: any) => {
+        await this._messageHandler.handleMessage(message);
       },
       undefined,
       this._disposables
     );
   }
 
-  private _readSettingsFile() {
-    try {
-      // Prova a trovare il workspace corrente
-      const workspaceFolder = workspace.workspaceFolders?.[0];
-      if (!workspaceFolder) {
-        this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
-        return;
-      }
 
-      // Costruisce il percorso del file settings
-      const settingsPath = path.join(workspaceFolder.uri.fsPath, 'easysources-settings.json');
-      
-      // Verifica se il file esiste
-      if (fs.existsSync(settingsPath)) {
-        // Legge il contenuto del file
-        const settingsContent = fs.readFileSync(settingsPath, 'utf8');
-        try {
-          // Prova a parsare il JSON per verificare che sia valido
-          const parsedSettings = JSON.parse(settingsContent);
-          this._panel.webview.postMessage({ 
-            command: 'SETTINGS_FILE_CONTENT', 
-            content: JSON.stringify(parsedSettings, null, 2),
-            workspacePath: workspaceFolder.uri.fsPath
-          });
-          console.log('Settings file content sent to webview: ', JSON.stringify(parsedSettings, null, 2));
-        } catch (parseError) {
-          // Se il JSON non è valido, invia comunque il contenuto raw
-          this._panel.webview.postMessage({ 
-            command: 'SETTINGS_FILE_CONTENT', 
-            content: settingsContent 
-          });
-        }
-      } else {
-        this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
-      }
-    } catch (error) {
-      console.error('Error reading settings file:', error);
-      this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
-    }
-  }
-
-  private async _executeApiCommand(message: any) {
-    try {
-      const { apiNamespace, action, params, settings } = message;
-      
-      // Mappatura dei namespace alle API
-      const apiMap: { [key: string]: any } = {
-        'profiles': profiles,
-        'permissionSets': permissionSets,
-        'labels': labels,
-        'applications': applicationsApi,
-        'globalValueSets': globalValueSets,
-        'globalValueSetTranslations': globalValueSetTranslations,
-        'translations': translations,
-        'recordTypes': recordTypes
-      };
-
-      console.log(`Executing ${apiNamespace}.${action} with params:`, params);
-      console.log(`Using settings:`, settings);
-
-      const api = apiMap[apiNamespace];
-      if (!api) {
-        throw new Error(`Unknown API namespace: ${apiNamespace}`);
-      }
-
-      const method = api[action];
-      if (!method) {
-        throw new Error(`Unknown action: ${action} for ${apiNamespace}`);
-      }
-
-      // Prepara i parametri finali includendo i path da settings se disponibili
-      const finalParams = { ...params };
-      
-      if (settings) {
-        // Ottieni la directory del workspace per convertire i path relativi in assoluti
-        const workspaceFolder = workspace.workspaceFolders?.[0];
-        if (!workspaceFolder) {
-          throw new Error('No workspace folder found');
-        }
-        const workspacePath = workspaceFolder.uri.fsPath;
-        
-        // Aggiungi i path dalle settings convertendoli in path assoluti
-        if (settings['salesforce-xml-path']) {
-          const xmlPath = path.isAbsolute(settings['salesforce-xml-path']) 
-            ? settings['salesforce-xml-path']
-            : path.join(workspacePath, settings['salesforce-xml-path']);
-          finalParams['sf-xml'] = xmlPath;
-          console.log('SF-XML path resolved to:', xmlPath);
-        }
-        if (settings['easysources-csv-path']) {
-          const csvPath = path.isAbsolute(settings['easysources-csv-path'])
-            ? settings['easysources-csv-path'] 
-            : path.join(workspacePath, settings['easysources-csv-path']);
-          finalParams['es-csv'] = csvPath;
-          console.log('ES-CSV path resolved to:', csvPath);
-        }
-        
-        // Log dei parametri finali per debug
-        console.log('Final params with resolved paths:', finalParams);
-      }
-
-      // Esegui il comando API
-      const result = await method(finalParams);
-      
-      console.log(`API execution result:`, result);
-
-      // Invia il risultato al webview
-      this._panel.webview.postMessage({
-        command: 'API_EXECUTION_RESULT',
-        result: result
-      });
-
-      // Mostra anche una notifica di successo
-      window.showInformationMessage(`${apiNamespace}.${action} executed successfully!`);
-
-    } catch (error) {
-      console.error('Error executing API command:', error);
-      
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      
-      // Invia l'errore al webview
-      this._panel.webview.postMessage({
-        command: 'API_EXECUTION_ERROR',
-        error: errorMessage
-      });
-
-      // Mostra anche una notifica di errore
-      window.showErrorMessage(`API execution failed: ${errorMessage}`);
-    }
-  }
 
   
 }
