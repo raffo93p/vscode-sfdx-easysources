@@ -181,6 +181,10 @@ export class EasySourcesPanel {
             console.log('squarePushed');
             window.showInformationMessage(text);
             return;
+          case "DEBUG_LOG":
+            console.log('DEBUG_LOG');
+            console.log(message.data);
+            return;
           case "GET_METADATA_INPUT_LIST":
             console.log('GET_METADATA_INPUT_LIST');
             console.log('Message: ', message, 'objectName:', message.objectName);

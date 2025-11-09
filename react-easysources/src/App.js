@@ -82,7 +82,21 @@ function App() {
                 <header className="HomePage-header">
                     <img width={60} src={logo}  alt="EasySources logo"/> 
                     <h1 style={{paddingLeft:'1rem'}}>SFDX EasySources</h1>
-                    
+                    <Button 
+                        size="small" 
+                        variant="outlined" 
+                        onClick={() => {
+                            if (globalState.vscode && globalState.vscode.postMessage) {
+                                globalState.vscode.postMessage({ 
+                                    command: 'DEBUG_LOG', 
+                                    data: JSON.stringify(globalState, null, 2) 
+                                });
+                            }
+                        }}
+                        style={{marginLeft: 'auto', height: 'fit-content'}}
+                    >
+                        Debug State
+                    </Button>
                 </header>
                     
                 <div>
@@ -91,14 +105,14 @@ function App() {
                     
                 </div>
 
-            <footer>
+            {/* <footer>
                 <p>Info</p>
                 <p>Command: {globalState.command}</p>
                 <p>Metadata: {globalState.metadata}, Action: {globalState.action}</p>
                 <p>Settings: {globalState.settings ? 'Loaded' : 'Settings not found'}</p>
                 {globalState.executionResult && <p>Last Execution: Success</p>}
                 {globalState.executionError && <p>Last Execution: Error - {globalState.executionError}</p>}
-            </footer>
+            </footer> */}
 
             </div>
         </GlobalContext.Provider>
@@ -227,7 +241,7 @@ function GeneralForm(){
                 
                 // Aggiungi recordtype specifici se selezionati
                 if (globalState.selectRecordtype && globalState.selectedRecordtype && globalState.selectedRecordtype.length > 0) {
-                    apiParams.input = globalState.selectedRecordtype.map(item => item.value).join(',');
+                    apiParams.recordtype = globalState.selectedRecordtype.map(item => item.value).join(',');
                 }
             }
 
@@ -241,6 +255,10 @@ function GeneralForm(){
             };
 
             console.log('Executing command:', commandData);
+            globalState.vscode.postMessage({ 
+                command: 'DEBUG_LOG', 
+                data: JSON.stringify(commandData, null, 2) 
+            });
             globalState.vscode.postMessage(commandData);
 
         } catch (error) {
@@ -313,7 +331,7 @@ function GeneralForm(){
             }
             
             if (globalState.selectRecordtype && globalState.selectedRecordtype && globalState.selectedRecordtype.length > 0) {
-                params.push(`input: '${globalState.selectedRecordtype.map(item => item.value).join(',')}'`);
+                params.push(`recordtype: '${globalState.selectedRecordtype.map(item => item.value).join(',')}'`);
             }
         }
 
@@ -444,7 +462,7 @@ function GeneralForm(){
                                 setSelectedOptions={setSelected}
                             />
 
-                            <p>Selected: {globalState.selectedInput?.map((option) => option.label).join(", ")}</p>
+                            {/* <p>Selected: {globalState.selectedInput?.map((option) => option.label).join(", ")}</p> */}
                         </div>
                         : null
                         }
