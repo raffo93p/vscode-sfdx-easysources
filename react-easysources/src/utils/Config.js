@@ -159,5 +159,6 @@ export const metadataAction_params = {
         'clean': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
         'merge': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
     },
+    'translations': { ...actionBasicParams(false, true)}
 
 }

@@ -5,6 +5,12 @@ import * as fs from 'fs';
 import { getNonce } from "../utilities/getNonce";
 import { applications } from "../mock/Mock";
 import { getMetadataList } from "../utilities/selectUtils";
+
+// Import the sfdx-easy-sources API
+const {
+  profiles, permissionSets, labels, applications: applicationsApi, 
+  globalValueSets, globalValueSetTranslations, translations, recordTypes
+} = require('sfdx-easy-sources');
 /**
  * This class manages the state and behavior of HelloWorld webview panels.
  *
@@ -77,6 +83,9 @@ export class EasySourcesPanel {
         {
           // Enable JavaScript in the webview
           enableScripts: true,
+          
+          // Retain context when hidden to preserve state
+          retainContextWhenHidden: true,
           
           // Restrict the webview to only load resources from the `out` directory
           localResourceRoots: [
@@ -193,6 +202,10 @@ export class EasySourcesPanel {
             console.log('READ_SETTINGS_FILE');
             this._readSettingsFile();
             return;
+          case "EXECUTE_API":
+            console.log('EXECUTE_API');
+            this._executeApiCommand(message);
+            return;
           default:
               break;
         }
@@ -223,7 +236,8 @@ export class EasySourcesPanel {
           const parsedSettings = JSON.parse(settingsContent);
           this._panel.webview.postMessage({ 
             command: 'SETTINGS_FILE_CONTENT', 
-            content: JSON.stringify(parsedSettings, null, 2) 
+            content: JSON.stringify(parsedSettings, null, 2),
+            workspacePath: workspaceFolder.uri.fsPath
           });
           console.log('Settings file content sent to webview: ', JSON.stringify(parsedSettings, null, 2));
         } catch (parseError) {
@@ -239,6 +253,96 @@ export class EasySourcesPanel {
     } catch (error) {
       console.error('Error reading settings file:', error);
       this._panel.webview.postMessage({ command: 'SETTINGS_FILE_NOT_FOUND' });
+    }
+  }
+
+  private async _executeApiCommand(message: any) {
+    try {
+      const { apiNamespace, action, params, settings } = message;
+      
+      // Mappatura dei namespace alle API
+      const apiMap: { [key: string]: any } = {
+        'profiles': profiles,
+        'permissionSets': permissionSets,
+        'labels': labels,
+        'applications': applicationsApi,
+        'globalValueSets': globalValueSets,
+        'globalValueSetTranslations': globalValueSetTranslations,
+        'translations': translations,
+        'recordTypes': recordTypes
+      };
+
+      console.log(`Executing ${apiNamespace}.${action} with params:`, params);
+      console.log(`Using settings:`, settings);
+
+      const api = apiMap[apiNamespace];
+      if (!api) {
+        throw new Error(`Unknown API namespace: ${apiNamespace}`);
+      }
+
+      const method = api[action];
+      if (!method) {
+        throw new Error(`Unknown action: ${action} for ${apiNamespace}`);
+      }
+
+      // Prepara i parametri finali includendo i path da settings se disponibili
+      const finalParams = { ...params };
+      
+      if (settings) {
+        // Ottieni la directory del workspace per convertire i path relativi in assoluti
+        const workspaceFolder = workspace.workspaceFolders?.[0];
+        if (!workspaceFolder) {
+          throw new Error('No workspace folder found');
+        }
+        const workspacePath = workspaceFolder.uri.fsPath;
+        
+        // Aggiungi i path dalle settings convertendoli in path assoluti
+        if (settings['salesforce-xml-path']) {
+          const xmlPath = path.isAbsolute(settings['salesforce-xml-path']) 
+            ? settings['salesforce-xml-path']
+            : path.join(workspacePath, settings['salesforce-xml-path']);
+          finalParams['sf-xml'] = xmlPath;
+          console.log('SF-XML path resolved to:', xmlPath);
+        }
+        if (settings['easysources-csv-path']) {
+          const csvPath = path.isAbsolute(settings['easysources-csv-path'])
+            ? settings['easysources-csv-path'] 
+            : path.join(workspacePath, settings['easysources-csv-path']);
+          finalParams['es-csv'] = csvPath;
+          console.log('ES-CSV path resolved to:', csvPath);
+        }
+        
+        // Log dei parametri finali per debug
+        console.log('Final params with resolved paths:', finalParams);
+      }
+
+      // Esegui il comando API
+      const result = await method(finalParams);
+      
+      console.log(`API execution result:`, result);
+
+      // Invia il risultato al webview
+      this._panel.webview.postMessage({
+        command: 'API_EXECUTION_RESULT',
+        result: result
+      });
+
+      // Mostra anche una notifica di successo
+      window.showInformationMessage(`${apiNamespace}.${action} executed successfully!`);
+
+    } catch (error) {
+      console.error('Error executing API command:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      // Invia l'errore al webview
+      this._panel.webview.postMessage({
+        command: 'API_EXECUTION_ERROR',
+        error: errorMessage
+      });
+
+      // Mostra anche una notifica di errore
+      window.showErrorMessage(`API execution failed: ${errorMessage}`);
     }
   }
 
