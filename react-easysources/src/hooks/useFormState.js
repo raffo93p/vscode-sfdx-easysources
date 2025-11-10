@@ -20,6 +20,12 @@ export function useFormState(settings) {
     selectedObject: null,
     selectRecordtype: null,
     selectedRecordtype: null,
+    // Campi per l'azione delete - profiles/permissionsets
+    type: '',
+    tagid: '',
+    // Campi per l'azione delete - recordtypes
+    picklist: '',
+    apiname: '',
     viewDebugInfo: false
   });
 
@@ -50,6 +56,10 @@ export function useFormState(settings) {
       updates.selectRecordtype = null;
       updates.selectedObject = null;
       updates.selectedRecordtype = null;
+      updates.type = '';
+      updates.tagid = '';
+      updates.picklist = '';
+      updates.apiname = '';
       
       // Reset global state
       dispatch({ type: 'RESET_EXECUTION_STATE' });
@@ -66,10 +76,18 @@ export function useFormState(settings) {
       const metadata = formState.metadata;
       const action = value;
       
-      updates.sort = metadataAction_params[metadata]?.[action]?.sort ?? null;
-      updates.selectInput = metadataAction_params[metadata]?.[action]?.selectInput ?? null;
-      updates.selectObject = metadataAction_params[metadata]?.[action]?.selectObject ?? null;
-      updates.selectRecordtype = metadataAction_params[metadata]?.[action]?.selectRecordtype ?? null;
+      const actionConfig = metadataAction_params[metadata]?.[action];
+      
+      updates.sort = actionConfig?.sort ?? null;
+      updates.selectInput = actionConfig?.selectInput ?? null;
+      updates.selectObject = actionConfig?.selectObject ?? null;
+      updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
+      
+      // Reset campi delete quando cambia action
+      updates.type = '';
+      updates.tagid = '';
+      updates.picklist = '';
+      updates.apiname = '';
     }
 
     setFormState(prev => ({ ...prev, ...updates }));
@@ -97,11 +115,17 @@ export function useFormState(settings) {
     setFormState(prev => ({ ...prev, ...updates }));
   };
 
+  const handleChangeText = (event, whatField) => {
+    const value = event.target.value;
+    setFormState(prev => ({ ...prev, [whatField]: value }));
+  };
+
   return {
     formState,
     updateField,
     handleChangeSelect,
     handleChangeCheckbox,
+    handleChangeText,
     setSelectedInput,
     setSelectedRecordtype
   };

@@ -50,6 +50,27 @@ export class CommandService {
       }
     }
 
+    // Aggiungi campi specifici per l'azione delete
+    if (formState.action === 'delete') {
+      if (formState.metadata === 'recordtypes') {
+        // Campi specifici per recordtypes
+        if (formState.picklist) {
+          apiParams.picklist = formState.picklist;
+        }
+        if (formState.apiname) {
+          apiParams.apiname = formState.apiname;
+        }
+      } else {
+        // Campi per profiles e permissionsets
+        if (formState.type) {
+          apiParams.type = formState.type;
+        }
+        if (formState.tagid) {
+          apiParams.tagid = formState.tagid;
+        }
+      }
+    }
+
     return apiParams;
   }
 
@@ -97,5 +118,74 @@ export class CommandService {
     }
 
     return null;
+  }
+
+  /**
+   * Risolve un path relativo utilizzando il workspace path
+   * @param {string} relativePath - Path relativo
+   * @param {string} workspacePath - Path del workspace
+   * @returns {string} Path risolto
+   */
+  static resolvePath(relativePath, workspacePath) {
+    if (!relativePath || !workspacePath) return relativePath;
+    
+    // Se è già un path assoluto, ritornalo così com'è
+    if (relativePath.startsWith('/') || relativePath.match(/^[A-Za-z]:\\/)) {
+      return relativePath;
+    }
+    
+    // Altrimenti combinalo con il workspace path
+    return workspacePath + '/' + relativePath.replace(/^\.\//, '');
+  }
+
+  /**
+   * Costruisce il preview del comando per il debug
+   * @param {Object} formState - Stato del form
+   * @param {Object} settings - Settings dell'applicazione
+   * @param {string} workspacePath - Path del workspace
+   * @returns {string} Preview del comando
+   */
+  static buildCommandPreview(formState, settings, workspacePath) {
+    if (!formState.metadata || !formState.action) {
+      return 'Select metadata and action to see command preview';
+    }
+
+    if (!settings) {
+      return 'Settings not loaded - make sure easysources-settings.json exists in workspace root';
+    }
+
+    if (!workspacePath) {
+      return 'Workspace path not available - paths cannot be resolved';
+    }
+
+    const apiParams = this.buildApiParams(formState);
+    let commandStr = `${this.metadataApiMapping[formState.metadata]}.${formState.action}(`;
+    
+    const params = [];
+    
+    // Converti i parametri API in formato stringa per il preview
+    Object.keys(apiParams).forEach(key => {
+      params.push(`${key}: '${apiParams[key]}'`);
+    });
+
+    // Aggiungi i path dalle settings se disponibili (risolti come path assoluti)
+    if (settings && workspacePath) {
+      if (settings['salesforce-xml-path']) {
+        const resolvedXmlPath = this.resolvePath(settings['salesforce-xml-path'], workspacePath);
+        params.push(`'sf-xml': '${resolvedXmlPath}'`);
+      }
+      if (settings['easysources-csv-path']) {
+        const resolvedCsvPath = this.resolvePath(settings['easysources-csv-path'], workspacePath);
+        params.push(`'es-csv': '${resolvedCsvPath}'`);
+      }
+    }
+
+    if (params.length > 0) {
+      commandStr += `{${params.join(', ')}}`;
+    }
+    
+    commandStr += ')';
+    
+    return commandStr;
   }
 }

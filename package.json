@@ -43,6 +43,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "sfdx-easy-sources": "^0.9.1-develop.01"
+    "sfdx-easy-sources": "^0.9.1-develop.02"
   }
 }

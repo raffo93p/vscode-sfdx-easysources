@@ -92,9 +92,29 @@ function actionBasicParams(sort, canSelectInput) {
             'merge': {'sort': sort}
         }
     }
-    
-    
 }
+
+// Configurazione comune per l'azione delete
+const deleteActionConfig = {
+    sort: true,
+    selectInput: false,
+    type: [
+        {label: 'ApplicationVisibilities', value: 'applicationVisibilities'}, 
+        {label: 'ClassAccesses', value: 'classAccesses'}, 
+        {label: 'CustomMetadataTypeAccesses', value: 'customMetadataTypeAccesses'},
+        {label: 'CustomPermissions', value: 'customPermissions'},
+        {label: 'CustomSettingAccesses', value: 'customSettingAccesses'},
+        {label: 'FieldPermissions', value: 'fieldPermissions'},
+        {label: 'FlowAccesses', value: 'flowAccesses'},
+        {label: 'LayoutAssignments', value: 'layoutAssignments'},
+        {label: 'ObjectPermissions', value: 'objectPermissions'},
+        {label: 'PageAccesses', value: 'pageAccesses'},
+        {label: 'RecordTypeVisibilities', value: 'recordTypeVisibilities'},
+        {label: 'TabVisibilities', value: 'tabVisibilities'},
+        {label: 'UserPermissions', value: 'userPermissions'}
+    ],
+    tagid: ''
+};
 
 
 export const metadataAction_params = {
@@ -110,44 +130,35 @@ export const metadataAction_params = {
     },
     'permissionsets': {
         ...actionBasicParams(true, true),
-        'delete': {
-            'sort': true,
-            'selectInput': false,
-            // TODO
-            'type': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}],
-            'tagid': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}]
-        },
+        'delete': deleteActionConfig,
         'minify': {'sort': true, 'selectInput': false},
         'clean': {
             'sort': true,
             'selectInput': false,
             'orgname': '', // TODO
-            'mode': [{label: 'Clean', value: 'clean'}, {label: 'Interactive', value: 'interactive'}, {label: 'Log', value: 'log'}],
+            'mode': [{label: 'Clean', value: 'clean'}, {label: 'Log', value: 'log'}],
             'target': [{label: 'Org', value: 'org'}, {label: 'Local', value: 'local'}, {label: 'Both', value: 'both'}],
             'include-standard-fields': false,
             'include-standard-tabs': false,
             'skip-manifest-creation': false,
+            'include-types': [],
             'skip-types': ['Settings'] // TODO
         }
     },
     'profiles': {
         ...actionBasicParams(true, true),
-        'delete': {
-            'sort': true,
-            'selectInput': false,
-            'type': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}],
-            'tagid': [{label: 'Field Permissions', value: 'fieldpermissions'}, {label: 'Object Permissions', value: 'objectpermissions'}, {label: 'System Permissions', value: 'systempermissions'}]
-        },
+        'delete': deleteActionConfig,
         'minify': {'sort': true, 'selectInput': false},
         'clean': {
             'sort': true,
             'selectInput': false,
             'orgname': '', // TODO
-            'mode': [{label: 'Clean', value: 'clean'}, {label: 'Interactive', value: 'interactive'}, {label: 'Log', value: 'log'}],
+            'mode': [{label: 'Clean', value: 'clean'}, {label: 'Log', value: 'log'}],
             'target': [{label: 'Org', value: 'org'}, {label: 'Local', value: 'local'}, {label: 'Both', value: 'both'}],
             'include-standard-fields': false,
             'include-standard-tabs': false,
             'skip-manifest-creation': false,
+            'include-types': [],
             'skip-types': ['Settings'] // TODO
         }
     },
@@ -155,7 +166,12 @@ export const metadataAction_params = {
         'split': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
         'upsert': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
         'updatekey': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
-        'delete': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'delete': { 'sort': true, 
+            selectObject: false,
+            selectRecordtype: false,
+            picklist: '',
+            apiname: ''
+        },
         'clean': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
         'merge': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
     },

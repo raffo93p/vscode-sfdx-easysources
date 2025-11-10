@@ -23,6 +23,7 @@ function AppContent() {
     formState, 
     handleChangeSelect, 
     handleChangeCheckbox,
+    handleChangeText,
     setSelectedInput,
     setSelectedRecordtype
   } = useFormState(settings);
@@ -100,6 +101,7 @@ function AppContent() {
             formState={formState}
             handleChangeSelect={handleChangeSelect}
             handleChangeCheckbox={handleChangeCheckbox}
+            handleChangeText={handleChangeText}
             setSelectedInput={setSelectedInput}
             setSelectedRecordtype={setSelectedRecordtype}
             settings={settings}

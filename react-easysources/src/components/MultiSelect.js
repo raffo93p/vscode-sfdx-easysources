@@ -10,28 +10,22 @@ export default function MultiSelect({metadata, optionList, selectedOptions, setS
     setSelectedOptions(data);
   }
 
-  const [menuIsOpen, setMenuIsOpen] = React.useState();
-
   const onInputChange = (
     inputValue,
     { action, prevInputValue }
   ) => {
     if (action === 'input-change') return inputValue;
     if (action === 'menu-close') {
-    //   if (prevInputValue) setMenuIsOpen(true);
-    //   else setMenuIsOpen(undefined);
       return '';
     } else {return prevInputValue;}
-    //return prevInputValue;
   };
 
   return (
     <div className="app" style={{ background: "#222", color: "#fff", padding: "1em" }}>
-      <p>Available {metadata}</p>
+      {/* <p>Available {metadata}</p> */}
       <div className="dropdown-container">
         <Select
           onInputChange={onInputChange}
-          menuIsOpen={menuIsOpen}
           closeMenuOnSelect={false}
           options={optionList}
           placeholder={"Select " + metadata}
@@ -49,7 +43,8 @@ export default function MultiSelect({metadata, optionList, selectedOptions, setS
             menu: (base) => ({
               ...base,
               backgroundColor: "#333",
-              color: "#fff"
+              color: "#fff",
+              zIndex: 9999
             }),
             option: (base, state) => ({
               ...base,

@@ -7,6 +7,7 @@ import MyCheckbox from './MyCheckbox';
 import CommandPreview from './CommandPreview';
 import ExecutionResults from './ExecutionResults';
 import FormStateDebug from './FormStateDebug';
+import DeleteFields from './DeleteFields';
 import { CommandService } from '../services/CommandService';
 
 /**
@@ -16,6 +17,7 @@ function GeneralForm({
   formState, 
   handleChangeSelect, 
   handleChangeCheckbox,
+  handleChangeText,
   setSelectedInput,
   setSelectedRecordtype,
   settings, 
@@ -141,6 +143,17 @@ function GeneralForm({
               optionList={availableRecordtypes}
               selectedOptions={formState.selectedRecordtype}
               setSelectedOptions={setSelectedRecordtype}
+            />
+          </Grid>
+        )}
+
+        {/* Delete Fields - Mostra i campi specifici per l'azione Delete */}
+        {formState.action === 'delete' && (
+          <Grid item xs={12} style={{marginTop: '1rem'}}>
+            <DeleteFields 
+              formState={formState}
+              handleChangeSelect={handleChangeSelect}
+              handleChangeText={handleChangeText}
             />
           </Grid>
         )}
