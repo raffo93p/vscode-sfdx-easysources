@@ -45,7 +45,7 @@ export function useApiExecution() {
   
   const executeCommand = (commandData) => {
     // Impostiamo lo stato di esecuzione nel global state
-    dispatch({ type: 'SET_EXECUTING', payload: true });
+    dispatch({ type: 'SET_EXECUTING'});
     
     if (vscode && vscode.postMessage) {
       vscode.postMessage(commandData);

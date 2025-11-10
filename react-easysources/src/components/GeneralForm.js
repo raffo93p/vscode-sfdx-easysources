@@ -54,8 +54,8 @@ function GeneralForm({
   return (
     <div>
       <Grid container spacing={2}>
-        {/* Left Column */}
-        <Grid item xs={6}>
+        {/* First Row - Metadata and Action on the left, Specify Metadata on the right */}
+        <Grid item xs={8}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <MySelect 
@@ -73,76 +73,77 @@ function GeneralForm({
                 onChange={(event) => handleChangeSelect(event, "action")}
               />
             </Grid>
-            
-            <MyCheckbox
-              checked={formState.sort}
-              onChange={(event) => handleChangeCheckbox(event, "sort")}
-              label="Sort"
-            />
           </Grid>
         </Grid>
-        {/* End Left Column */}
+        
+        {/* Specify Metadata checkbox on the right (only if not labels or recordtypes) */}
+        {formState.metadata !== 'labels' && formState.metadata !== 'recordtypes' && (
+          <Grid item xs={4}>
+            <MyCheckbox
+              checked={formState.selectInput}
+              onChange={(event) => handleChangeCheckbox(event, "selectInput")}
+              label={"Select " + formState.metadata}
+            />
+          </Grid>
+        )}
 
-        {/* Right Column */}
-        <Grid item xs={6}>
-          {/* Generic input selection */}
-          <MyCheckbox
-            checked={formState.selectInput}
-            onChange={(event) => handleChangeCheckbox(event, "selectInput")}
-            label={"Run on specific " + formState.metadata}
-          />
+        {/* Multiselect for generic input (full width) */}
+        {formState.selectInput && (
+          <Grid item xs={12}>
+            <MultiSelect 
+              metadata={formState.metadata}
+              optionList={availableInput}
+              selectedOptions={formState.selectedInput}
+              setSelectedOptions={setSelectedInput}
+            />
+          </Grid>
+        )}
 
-          {/* Multiselect for generic input */}
-          {formState.selectInput && (
-            <div>
-              <MultiSelect 
-                metadata={formState.metadata}
-                optionList={availableInput}
-                selectedOptions={formState.selectedInput}
-                setSelectedOptions={setSelectedInput}
-              />
-            </div>
-          )}
+        {/* Specify Object checkbox on the right (only for recordtypes and when selectInput is not shown) */}
+        {(formState.metadata === 'recordtypes') && (
+          <Grid item xs={4}>
+            <MyCheckbox
+              checked={formState.selectObject}
+              onChange={(event) => handleChangeCheckbox(event, "selectObject")}
+              label="Select object"
+            />
+          </Grid>
+        )}
 
-          {/* RecordType - Select Object */}
-          <MyCheckbox
-            checked={formState.selectObject}
-            onChange={(event) => handleChangeCheckbox(event, "selectObject")}
-            label="Run on specific object"
-          />
-
-          {formState.selectObject && (
+        {/* Object Selection */}
+        {formState.selectObject && (
+          <Grid item xs={8}>
             <MySelect 
               label="Object"
               options={availableObjects}
               value={formState.selectedObject}
               onChange={(event) => handleChangeSelect(event, "selectedObject")}
             />
-          )}
+          </Grid>
+        )}
 
-          {/* RecordType - Select RecordType */}
-          {formState.selectObject && formState.selectedObject && formState.selectedObject !== '' && (
-            <div>
-              <MyCheckbox
-                checked={formState.selectRecordtype}
-                onChange={(event) => handleChangeCheckbox(event, "selectRecordtype")}
-                label="Run on specific record types"
-              />
-            </div>
-          )}
+        {/* RecordType - Select RecordType checkbox (right of Object select) */}
+        {formState.selectObject && formState.selectedObject && formState.selectedObject !== '' && (
+          <Grid item xs={4}>
+            <MyCheckbox
+              checked={formState.selectRecordtype}
+              onChange={(event) => handleChangeCheckbox(event, "selectRecordtype")}
+              label="Select record types"
+            />
+          </Grid>
+        )}
 
-          {formState.selectObject && formState.selectedObject && formState.selectRecordtype && (
-            <div>
-              <MultiSelect 
-                metadata="recordtypes"
-                optionList={availableRecordtypes}
-                selectedOptions={formState.selectedRecordtype}
-                setSelectedOptions={setSelectedRecordtype}
-              />
-            </div>
-          )}
-        </Grid> 
-        {/* End Right Column*/}
+        {/* RecordType multiselect (full width) */}
+        {formState.selectObject && formState.selectedObject && formState.selectRecordtype && (
+          <Grid item xs={12}>
+            <MultiSelect 
+              metadata="recordtypes"
+              optionList={availableRecordtypes}
+              selectedOptions={formState.selectedRecordtype}
+              setSelectedOptions={setSelectedRecordtype}
+            />
+          </Grid>
+        )}
       </Grid>
 
       {/* Command Preview - only show if debug info is enabled */}

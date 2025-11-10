@@ -14,6 +14,11 @@ export const initialState = {
 // Reducer per gestire il global state
 export function appReducer(state, action) {
   switch (action.type) {
+    case 'UPDATE_STATE':
+        return {
+            ...state,
+            ...action.payload
+        };
     case 'UPDATE_AVAILABLE_INPUT':
       return {
         ...state,
@@ -60,7 +65,9 @@ export function appReducer(state, action) {
     case 'SET_EXECUTING':
       return {
         ...state,
-        isExecuting: action.payload
+        isExecuting: true,
+        executionResult: null,
+        executionError: null
       };
     
     case 'RESET_EXECUTION_STATE':
