@@ -19,6 +19,20 @@ export class CommandService {
   };
 
   /**
+   * Mappatura delle azioni del form (lowercase) alle azioni API (camelCase)
+   */
+  static actionApiMapping = {
+    'split': 'split',
+    'upsert': 'upsert', 
+    'updatekey': 'updateKey',
+    'merge': 'merge',
+    'minify': 'minify',
+    'delete': 'delete',
+    'clean': 'clean',
+    'arealigned': 'areAligned'
+  };
+
+  /**
    * Costruisce i parametri per l'API basandosi sullo stato del form
    * @param {Object} formState - Stato del form
    * @returns {Object} Parametri per l'API
@@ -71,6 +85,13 @@ export class CommandService {
       }
     }
 
+    // Aggiungi campi specifici per l'azione arealigned
+    if (formState.action === 'arealigned') {
+      if (formState.mode) {
+        apiParams.mode = formState.mode;
+      }
+    }
+
     return apiParams;
   }
 
@@ -86,7 +107,7 @@ export class CommandService {
     return {
       command: 'EXECUTE_API',
       apiNamespace: this.metadataApiMapping[formState.metadata],
-      action: formState.action,
+      action: this.actionApiMapping[formState.action] || formState.action,
       params: apiParams,
       settings: settings // Aggiungi le settings per i path
     };
@@ -159,7 +180,8 @@ export class CommandService {
     }
 
     const apiParams = this.buildApiParams(formState);
-    let commandStr = `${this.metadataApiMapping[formState.metadata]}.${formState.action}(`;
+    const apiAction = this.actionApiMapping[formState.action] || formState.action;
+    let commandStr = `${this.metadataApiMapping[formState.metadata]}.${apiAction}(`;
     
     const params = [];
     

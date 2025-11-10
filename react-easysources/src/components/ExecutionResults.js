@@ -1,11 +1,12 @@
 import React from 'react';
 import { Grid, Alert } from '@mui/material';
 import ResultsTable from './ResultsTable';
+import AreAlignedResults from './AreAlignedResults';
 
 /**
  * Componente per visualizzare i risultati dell'esecuzione
  */
-function ExecutionResults({ executionResult, executionError, viewDebugInfo }) {
+function ExecutionResults({ executionResult, executionError, viewDebugInfo, action }) {
   if (executionError) {
     return (
       <Grid container spacing={2} style={{marginTop: '1rem'}}>
@@ -24,8 +25,18 @@ function ExecutionResults({ executionResult, executionError, viewDebugInfo }) {
   if (executionResult) {
     return (
       <>
-        {/* Results Table */}
-        {executionResult.items && (
+        {/* Are Aligned Results - Special table for arealigned action */}
+        {action === 'arealigned' && (
+          executionResult.summary || 
+          executionResult.totalItems !== undefined || 
+          executionResult.results || 
+          (executionResult.result && (executionResult.result.totalItems !== undefined || executionResult.result.results))
+        ) && (
+          <AreAlignedResults executionResult={executionResult} />
+        )}
+
+        {/* Standard Results Table - For other actions */}
+        {action !== 'arealigned' && executionResult.items && (
           <Grid container spacing={2} style={{marginTop: '1rem'}}>
             <Grid item xs={12}>
               <ResultsTable items={executionResult.items} />
@@ -33,7 +44,7 @@ function ExecutionResults({ executionResult, executionError, viewDebugInfo }) {
           </Grid>
         )}
 
-        {/* Results Display */}
+        {/* Debug Results Display */}
         {viewDebugInfo && (
         <Grid container spacing={2} style={{marginTop: '1rem'}}>
           <Grid item xs={12}>

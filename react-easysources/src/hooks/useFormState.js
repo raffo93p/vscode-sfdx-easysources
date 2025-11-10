@@ -26,6 +26,8 @@ export function useFormState(settings) {
     // Campi per l'azione delete - recordtypes
     picklist: '',
     apiname: '',
+    // Campo per l'azione arealigned
+    mode: 'string',
     viewDebugInfo: false
   });
 
@@ -60,6 +62,7 @@ export function useFormState(settings) {
       updates.tagid = '';
       updates.picklist = '';
       updates.apiname = '';
+      updates.mode = 'string';
       
       // Reset global state
       dispatch({ type: 'RESET_EXECUTION_STATE' });
@@ -83,11 +86,12 @@ export function useFormState(settings) {
       updates.selectObject = actionConfig?.selectObject ?? null;
       updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
       
-      // Reset campi delete quando cambia action
+      // Reset campi specifici quando cambia action
       updates.type = '';
       updates.tagid = '';
       updates.picklist = '';
       updates.apiname = '';
+      updates.mode = actionConfig?.mode ?? 'string';
     }
 
     setFormState(prev => ({ ...prev, ...updates }));

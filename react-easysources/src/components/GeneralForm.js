@@ -8,6 +8,7 @@ import CommandPreview from './CommandPreview';
 import ExecutionResults from './ExecutionResults';
 import FormStateDebug from './FormStateDebug';
 import DeleteFields from './DeleteFields';
+import AreAlignedFields from './AreAlignedFields';
 import { CommandService } from '../services/CommandService';
 
 /**
@@ -157,6 +158,16 @@ function GeneralForm({
             />
           </Grid>
         )}
+
+        {/* Are Aligned Fields - Mostra i campi specifici per l'azione Are Aligned */}
+        {formState.action === 'arealigned' && (
+          <Grid item xs={12} style={{marginTop: '1rem'}}>
+            <AreAlignedFields 
+              formState={formState}
+              handleChangeSelect={handleChangeSelect}
+            />
+          </Grid>
+        )}
       </Grid>
 
       {/* Command Preview - only show if debug info is enabled */}
@@ -192,6 +203,7 @@ function GeneralForm({
         executionResult={executionResult}
         executionError={executionError}
         viewDebugInfo={formState.viewDebugInfo}
+        action={formState.action}
       />
 
       {/* Form State Debug Info - only show if debug info is enabled */}

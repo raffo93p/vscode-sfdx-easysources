@@ -10,70 +10,57 @@ export const optionsMdt = [
     {label: 'Translations', value: 'translations'}   
 ];
 
+// Azioni di base disponibili per tutti i metadata
+const baseActions = [
+    {label: 'Split (Create CSV from XML)', value: 'split'},
+    {label: 'Upsert (Upsert CSV from XML)', value: 'upsert'},
+    {label: 'Update _tagId (on CSV)', value: 'updatekey'},
+    {label: 'Merge (Create XML from CSV)', value: 'merge'},
+    {label: 'Are Aligned (XML and CSV)', value: 'arealigned'}
+];
+
+// Azioni aggiuntive per metadata specifici
+const additionalActions = {
+    minify: {label: 'Minify (on CSV)', value: 'minify'},
+    delete: {label: 'Delete (on CSV)', value: 'delete'},
+    clean: {label: 'Clean (on CSV)', value: 'clean'}
+};
+
 export const optionsAct = {
     '' : [],
-    'applications': [     
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Merge', value: 'merge'}
-    ],
-    'globalvaluesets': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Merge', value: 'merge'}
-    ],
-    'globalvaluesettranslations': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Merge', value: 'merge'}
-    ],
-    'labels': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Merge', value: 'merge'}
-    ],
+    'applications': [...baseActions],
+    'globalvaluesets': [...baseActions],
+    'globalvaluesettranslations': [...baseActions],
+    'labels': [...baseActions],
     'objecttranslations': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'Minify', value: 'minify'},
-        {label: 'Merge', value: 'merge'}
+        baseActions[0], // split
+        baseActions[1], // upsert
+        additionalActions.minify,
+        baseActions[3], // merge
+        baseActions[4]  // arealigned
     ],
     'permissionsets': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Delete', value: 'delete'},
-        {label: 'Minify', value: 'minify'},
-        {label: 'Clean', value: 'clean'},
-        {label: 'Merge', value: 'merge'}
+        ...baseActions,
+        additionalActions.delete,
+        additionalActions.minify,
+        additionalActions.clean
     ],
     'profiles': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Delete', value: 'delete'},
-        {label: 'Minify', value: 'minify'},
-        {label: 'Clean', value: 'clean'},
-        {label: 'Merge', value: 'merge'}
+        ...baseActions,
+        additionalActions.delete,
+        additionalActions.minify,
+        additionalActions.clean
     ],
     'recordtypes': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Delete', value: 'delete'},
-        {label: 'Clean', value: 'clean'},
-        {label: 'Merge', value: 'merge'}
+        baseActions[0], // split
+        baseActions[1], // upsert
+        baseActions[2], // updatekey
+        additionalActions.delete,
+        additionalActions.clean,
+        baseActions[3], // merge
+        baseActions[4]  // arealigned
     ],
-    'translations': [
-        {label: 'Split', value: 'split'},
-        {label: 'Upsert', value: 'upsert'},
-        {label: 'UpdateKey', value: 'updatekey'},
-        {label: 'Merge', value: 'merge'}
-    ]
+    'translations': [...baseActions]
 }
 
 function actionBasicParams(sort, canSelectInput) {
@@ -117,16 +104,36 @@ const deleteActionConfig = {
 };
 
 
+// Configurazione per l'azione arealigned
+const areAlignedActionConfig = {
+    sort: false,
+    selectInput: false, // varia per metadata
+    mode: 'string' // default value, opzioni: 'string' | 'logic'
+};
+
 export const metadataAction_params = {
-    'applications': { ...actionBasicParams(true, true)},
-    'globalvaluesets': { ...actionBasicParams(false, true)},
-    'globalvaluesettranslations': { ...actionBasicParams(false, true)},
-    'labels': { ...actionBasicParams(true, false)},
+    'applications': { 
+        ...actionBasicParams(true, true),
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+    },
+    'globalvaluesets': { 
+        ...actionBasicParams(false, true),
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+    },
+    'globalvaluesettranslations': { 
+        ...actionBasicParams(false, true),
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+    },
+    'labels': { 
+        ...actionBasicParams(true, false),
+        'arealigned': { ...areAlignedActionConfig } // no selectInput
+    },
     'objecttranslations': {
         'split': {'sort': true, 'selectInput': false},
         'upsert': {'sort': true, 'selectInput': false},
         'minify': {'sort': true, 'selectInput': false},
         'merge': {'sort': true, 'selectInput': false},
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
     },
     'permissionsets': {
         ...actionBasicParams(true, true),
@@ -143,7 +150,8 @@ export const metadataAction_params = {
             'skip-manifest-creation': false,
             'include-types': [],
             'skip-types': ['Settings'] // TODO
-        }
+        },
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
     },
     'profiles': {
         ...actionBasicParams(true, true),
@@ -160,7 +168,8 @@ export const metadataAction_params = {
             'skip-manifest-creation': false,
             'include-types': [],
             'skip-types': ['Settings'] // TODO
-        }
+        },
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
     },
     'recordtypes': {
         'split': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
@@ -174,7 +183,16 @@ export const metadataAction_params = {
         },
         'clean': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
         'merge': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
+        'arealigned': {
+            sort: false,
+            selectObject: false,
+            selectRecordtype: false,
+            mode: 'string'
+        }
     },
-    'translations': { ...actionBasicParams(false, true)}
+    'translations': { 
+        ...actionBasicParams(false, true),
+        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+    }
 
 }
