@@ -28,6 +28,9 @@ export function useFormState(settings) {
     apiname: '',
     // Campo per l'azione arealigned
     mode: 'string',
+    // Campi per l'azione customupsert
+    customUpsertType: '',
+    customUpsertValues: {},
     viewDebugInfo: false
   });
 
@@ -63,6 +66,8 @@ export function useFormState(settings) {
       updates.picklist = '';
       updates.apiname = '';
       updates.mode = 'string';
+      updates.customUpsertType = '';
+      updates.customUpsertValues = {};
       
       // Reset global state
       dispatch({ type: 'RESET_EXECUTION_STATE' });
@@ -73,6 +78,11 @@ export function useFormState(settings) {
       // When object changes, clear recordtypes
       updates.selectRecordtype = false;
       updates.selectedRecordtype = null;
+    }
+
+    if (whatSelect === "customUpsertType") {
+      // When customUpsertType changes, clear customUpsertValues
+      updates.customUpsertValues = {};
     }
 
     if (whatSelect === "action") {
@@ -92,6 +102,8 @@ export function useFormState(settings) {
       updates.picklist = '';
       updates.apiname = '';
       updates.mode = actionConfig?.mode ?? 'string';
+      updates.customUpsertType = '';
+      updates.customUpsertValues = {};
     }
 
     setFormState(prev => ({ ...prev, ...updates }));
@@ -121,7 +133,20 @@ export function useFormState(settings) {
 
   const handleChangeText = (event, whatField) => {
     const value = event.target.value;
-    setFormState(prev => ({ ...prev, [whatField]: value }));
+    
+    // Se il campo inizia con 'customUpsertValue_', aggiorna l'oggetto customUpsertValues
+    if (whatField.startsWith('customUpsertValue_')) {
+      const headerName = whatField.replace('customUpsertValue_', '');
+      setFormState(prev => ({
+        ...prev,
+        customUpsertValues: {
+          ...prev.customUpsertValues,
+          [headerName]: value
+        }
+      }));
+    } else {
+      setFormState(prev => ({ ...prev, [whatField]: value }));
+    }
   };
 
   return {

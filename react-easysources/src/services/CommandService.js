@@ -29,7 +29,8 @@ export class CommandService {
     'minify': 'minify',
     'delete': 'delete',
     'clean': 'clean',
-    'arealigned': 'areAligned'
+    'arealigned': 'areAligned',
+    'customupsert': 'customUpsert'
   };
 
   /**
@@ -89,6 +90,27 @@ export class CommandService {
     if (formState.action === 'arealigned') {
       if (formState.mode) {
         apiParams.mode = formState.mode;
+      }
+    }
+
+    // Aggiungi campi specifici per l'azione customupsert
+    if (formState.action === 'customupsert') {
+      if (formState.customUpsertType && formState.customUpsertValues) {
+        // Costruisci l'oggetto content con i valori degli headers
+        const content = {};
+        Object.keys(formState.customUpsertValues).forEach(key => {
+          if (formState.customUpsertValues[key]) {
+            content[key] = formState.customUpsertValues[key];
+          }
+        });
+        
+        // Aggiungi il content come stringa JSON
+        if (Object.keys(content).length > 0) {
+          apiParams.content = JSON.stringify(content);
+        }
+        
+        // Aggiungi il type
+        apiParams.type = formState.customUpsertType;
       }
     }
 

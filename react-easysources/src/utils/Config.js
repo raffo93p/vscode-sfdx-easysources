@@ -23,7 +23,8 @@ const baseActions = [
 const additionalActions = {
     minify: {label: 'Minify (on CSV)', value: 'minify'},
     delete: {label: 'Delete (on CSV)', value: 'delete'},
-    clean: {label: 'Clean (on CSV)', value: 'clean'}
+    clean: {label: 'Clean (on CSV)', value: 'clean'},
+    customupsert: {label: 'Custom Upsert (on CSV)', value: 'customupsert'}
 };
 
 export const optionsAct = {
@@ -43,13 +44,15 @@ export const optionsAct = {
         ...baseActions,
         additionalActions.delete,
         additionalActions.minify,
-        additionalActions.clean
+        additionalActions.clean,
+        additionalActions.customupsert
     ],
     'profiles': [
         ...baseActions,
         additionalActions.delete,
         additionalActions.minify,
-        additionalActions.clean
+        additionalActions.clean,
+        additionalActions.customupsert
     ],
     'recordtypes': [
         baseActions[0], // split
@@ -151,7 +154,8 @@ export const metadataAction_params = {
             'include-types': [],
             'skip-types': ['Settings'] // TODO
         },
-        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+        'arealigned': { ...areAlignedActionConfig, selectInput: false },
+        'customupsert': { ...areAlignedActionConfig, sort: true, selectInput: false }
     },
     'profiles': {
         ...actionBasicParams(true, true),
@@ -169,7 +173,8 @@ export const metadataAction_params = {
             'include-types': [],
             'skip-types': ['Settings'] // TODO
         },
-        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+        'arealigned': { ...areAlignedActionConfig, selectInput: false },
+        'customupsert': { ...areAlignedActionConfig, sort: true, selectInput: false }
     },
     'recordtypes': {
         'split': {'sort': true, 'selectObject': false, 'selectRecordtype': false},

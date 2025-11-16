@@ -9,6 +9,7 @@ import ExecutionResults from './ExecutionResults';
 import FormStateDebug from './FormStateDebug';
 import DeleteFields from './DeleteFields';
 import AreAlignedFields from './AreAlignedFields';
+import CustomUpsertFields from './CustomUpsertFields';
 import { CommandService } from '../services/CommandService';
 
 /**
@@ -165,6 +166,17 @@ function GeneralForm({
             <AreAlignedFields 
               formState={formState}
               handleChangeSelect={handleChangeSelect}
+            />
+          </Grid>
+        )}
+
+        {/* Custom Upsert Fields - Mostra i campi specifici per l'azione Custom Upsert */}
+        {formState.action === 'customupsert' && (
+          <Grid item xs={12} style={{marginTop: '1rem'}}>
+            <CustomUpsertFields 
+              formState={formState}
+              handleChangeSelect={handleChangeSelect}
+              handleChangeText={handleChangeText}
             />
           </Grid>
         )}
