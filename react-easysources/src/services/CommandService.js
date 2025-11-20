@@ -182,15 +182,15 @@ export class CommandService {
   }
 
   /**
-   * Costruisce il preview del comando per il debug
+   * Costruisce il preview dell'api per il debug
    * @param {Object} formState - Stato del form
    * @param {Object} settings - Settings dell'applicazione
    * @param {string} workspacePath - Path del workspace
-   * @returns {string} Preview del comando
+   * @returns {string} Preview dell'api
    */
-  static buildCommandPreview(formState, settings, workspacePath) {
+  static buildApiPreview(formState, settings, workspacePath) {
     if (!formState.metadata || !formState.action) {
-      return 'Select metadata and action to see command preview';
+      return 'Select metadata and action to see api preview';
     }
 
     if (!settings) {
@@ -203,7 +203,7 @@ export class CommandService {
 
     const apiParams = this.buildApiParams(formState);
     const apiAction = this.actionApiMapping[formState.action] || formState.action;
-    let commandStr = `${this.metadataApiMapping[formState.metadata]}.${apiAction}(`;
+    let apiStr = `${this.metadataApiMapping[formState.metadata]}.${apiAction}(`;
     
     const params = [];
     
@@ -225,11 +225,11 @@ export class CommandService {
     }
 
     if (params.length > 0) {
-      commandStr += `{${params.join(', ')}}`;
+      apiStr += `{${params.join(', ')}}`;
     }
     
-    commandStr += ')';
+    apiStr += ')';
     
-    return commandStr;
+    return apiStr;
   }
 }

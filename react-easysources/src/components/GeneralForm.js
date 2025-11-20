@@ -1,16 +1,16 @@
 import React from 'react';
-import { Grid, Button } from '@mui/material';
+import { Grid, Divider } from '@mui/material';
 import { optionsMdt, optionsAct } from '../utils/Config';
-import MultiSelect from './MultiSelect';
+import MyMultiSelect from './MyMultiSelect';
 import MySelect from './MySelect';
 import MyCheckbox from './MyCheckbox';
+import ApiPreview from './ApiPreview';
 import CommandPreview from './CommandPreview';
 import ExecutionResults from './ExecutionResults';
 import FormStateDebug from './FormStateDebug';
 import DeleteFields from './DeleteFields';
 import AreAlignedFields from './AreAlignedFields';
 import CustomUpsertFields from './CustomUpsertFields';
-import { CommandService } from '../services/CommandService';
 
 /**
  * Componente principale del form per configurare ed eseguire i comandi
@@ -29,31 +29,8 @@ function GeneralForm({
   availableRecordtypes,
   isExecuting,
   executionResult,
-  executionError,
-  onExecuteCommand
+  executionError
 }) {
-
-  const executeCommand = async () => {
-    const validationError = CommandService.getValidationError(formState, settings);
-    if (validationError) {
-      // In una app reale useresti un toast o notification system
-      console.error(validationError);
-      return;
-    }
-
-    try {
-      const commandData = CommandService.buildExecutionCommand(formState, settings);
-      console.log('Executing command:', commandData);
-      
-      onExecuteCommand(commandData);
-    } catch (error) {
-      console.error('Error building command:', error);
-    }
-  };
-
-  const canExecute = () => {
-    return CommandService.canExecute(formState, settings) && !isExecuting;
-  };
 
   return (
     <div>
@@ -91,10 +68,10 @@ function GeneralForm({
           </Grid>
         )}
 
-        {/* Multiselect for generic input (full width) */}
+        {/* MyMultiSelect for generic input (full width) */}
         {formState.selectInput && (
           <Grid item xs={12}>
-            <MultiSelect 
+            <MyMultiSelect 
               metadata={formState.metadata}
               optionList={availableInput}
               selectedOptions={formState.selectedInput}
@@ -137,10 +114,10 @@ function GeneralForm({
           </Grid>
         )}
 
-        {/* RecordType multiselect (full width) */}
+        {/* RecordType MyMultiSelect (full width) */}
         {formState.selectObject && formState.selectedObject && formState.selectRecordtype && (
           <Grid item xs={12}>
-            <MultiSelect 
+            <MyMultiSelect 
               metadata="recordtypes"
               optionList={availableRecordtypes}
               selectedOptions={formState.selectedRecordtype}
@@ -182,11 +159,17 @@ function GeneralForm({
         )}
       </Grid>
 
+      {/* Divider between form and preview */}
+      <Divider sx={{ marginTop: '2rem', marginBottom: '1rem' }} />
+
+      {/* Command Calculated - Always show in real-time */}
+      <CommandPreview formState={formState} />
+
       {/* Command Preview - only show if debug info is enabled */}
       {formState.viewDebugInfo && (
         <Grid container spacing={2} style={{marginTop: '1rem'}}>
           <Grid item xs={12}>
-            <CommandPreview 
+            <ApiPreview 
               formState={formState}
               settings={settings}
               workspacePath={workspacePath}
@@ -195,20 +178,8 @@ function GeneralForm({
         </Grid>
       )}
 
-      {/* Execute Button */}
-      <Grid container spacing={2} style={{marginTop: '1rem'}}>
-        <Grid item xs={12}>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={executeCommand}
-            disabled={!canExecute()}
-            fullWidth
-          >
-            {isExecuting ? 'Executing...' : 'Execute Command'}
-          </Button>
-        </Grid>
-      </Grid>
+      {/* Divider between preview and results */}
+      <Divider sx={{ marginTop: '2rem', marginBottom: '1rem' }} />
 
       {/* Results Display */}
       <ExecutionResults 

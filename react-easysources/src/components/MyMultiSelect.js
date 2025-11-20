@@ -2,7 +2,7 @@ import React from "react";
 // import "./styles.css";
 import Select from "react-select";
 
-export default function MultiSelect({metadata, optionList, selectedOptions, setSelectedOptions}) {
+export default function MyMultiSelect({metadata, optionList, selectedOptions, setSelectedOptions}) {
 
 
   // Function triggered on selection

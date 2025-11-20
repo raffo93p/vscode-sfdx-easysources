@@ -1,58 +1,258 @@
 import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { CheckCircle, Warning, Error } from '@mui/icons-material';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Paper,
+  Chip,
+  Alert,
+  Box,
+  Typography
+} from '@mui/material';
 
 /**
- * Componente per visualizzare i risultati dell'esecuzione in formato tabella
+ * Componente unificato per visualizzare i risultati dell'esecuzione in formato tabella
+ * Gestisce sia i risultati standard che quelli di Are Aligned
  */
-function ResultsTable({ items }) {
-  const getStatusIcon = (result) => {
-    switch (result) {
-      case 'OK':
-        return <CheckCircle style={{ color: 'green' }} />;
-      case 'WARN':
-        return <Warning style={{ color: 'orange' }} />;
-      case 'KO':
-        return <Error style={{ color: 'red' }} />;
-      default:
-        return <Error style={{ color: 'red' }} />;
-    }
-  };
+function ResultsTable({ items, executionResult, action }) {
+  // Se è Are Aligned, usa la logica specifica
+  if (action === 'arealigned' && executionResult) {
+    return <AreAlignedTable executionResult={executionResult} />;
+  }
 
-  const hasAnyErrors = Object.values(items).some(item => 
+  // Altrimenti usa la tabella standard con il nuovo stile
+  if (!items || Object.keys(items).length === 0) {
+    return null;
+  }
+
+  // Converti gli items da oggetto ad array per la tabella
+  const resultsArray = Object.entries(items).map(([itemName, itemData]) => ({
+    itemName,
+    result: itemData.result,
+    error: itemData.error
+  }));
+
+  const hasAnyErrors = resultsArray.some(item => 
     item.result === 'KO' || item.result === 'WARN' || item.error
   );
 
   return (
-    <TableContainer component={Paper} style={{ marginBottom: '1rem' }}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell><strong>Resource</strong></TableCell>
-            <TableCell><strong>Status</strong></TableCell>
-            {hasAnyErrors && <TableCell><strong>Message</strong></TableCell>}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.entries(items).map(([resourceName, resourceData]) => (
-            <TableRow key={resourceName}>
-              <TableCell>{resourceName}</TableCell>
-              <TableCell>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {getStatusIcon(resourceData.result)}
-                  <span>{resourceData.result}</span>
-                </div>
-              </TableCell>
-              {hasAnyErrors && (
-                <TableCell>
-                  {resourceData.error || '-'}
-                </TableCell>
-              )}
+    <Box sx={{ mt: 2 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+        <Table stickyHeader size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Resource</strong></TableCell>
+              <TableCell align="center"><strong>Result</strong></TableCell>
+              {hasAnyErrors && <TableCell><strong>Message</strong></TableCell>}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {resultsArray.map((item, index) => (
+              <TableRow 
+                key={index}
+                sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
+              >
+                <TableCell component="th" scope="row">
+                  <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                    {item.itemName}
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Chip 
+                    label={item.result}
+                    color={
+                      item.result === 'OK' ? 'success' : 
+                      item.result === 'WARN' ? 'warning' : 'error'
+                    }
+                    size="small"
+                  />
+                </TableCell>
+                {hasAnyErrors && (
+                  <TableCell>
+                    {item.error ? (
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          fontFamily: 'monospace', 
+                          fontSize: '0.8rem',
+                          color: item.result === 'OK' ? 'text.secondary' : 
+                                 item.result === 'WARN' ? 'warning.main' : 'error.main'
+                        }}
+                      >
+                        {item.error}
+                      </Typography>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        -
+                      </Typography>
+                    )}
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+}
+
+/**
+ * Sottotabella per i risultati di Are Aligned
+ */
+function AreAlignedTable({ executionResult }) {
+  if (!executionResult) {
+    return null;
+  }
+
+  // Nuovo formato: {result, summary: {totalItems, alignedItems, ...}, items: {itemName: {result, error}}}
+  let summaryData = null;
+  let itemsData = null;
+  let resultsArray = [];
+
+  if (executionResult.summary && executionResult.items) {
+    // Nuovo formato
+    summaryData = executionResult.summary;
+    itemsData = executionResult.items;
+    
+    // Converti gli items da oggetto ad array per la tabella
+    resultsArray = Object.keys(itemsData).map(itemName => {
+      const item = itemsData[itemName];
+      return {
+        itemName: itemName,
+        isAligned: item.result === 'OK',
+        isWarning: item.result === 'WARN',
+        differences: item.error ? [item.error] : []
+      };
+    });
+  } else {
+    // Formato precedente per backward compatibility
+    let resultData = executionResult;
+    if (executionResult.result && typeof executionResult.result === 'object') {
+      resultData = executionResult.result;
+    }
+
+    if (!resultData.results && resultData.totalItems === undefined) {
+      return null;
+    }
+
+    summaryData = {
+      totalItems: resultData.totalItems,
+      alignedItems: resultData.alignedItems,
+      misalignedItems: resultData.misalignedItems,
+      warningItems: resultData.warningItems
+    };
+    resultsArray = resultData.results || [];
+  }
+
+  const { totalItems, alignedItems, misalignedItems, warningItems } = summaryData;
+
+  // Se non ci sono risultati individuali, mostra solo il summary
+  if (!resultsArray || resultsArray.length === 0) {
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Alert severity="info">
+          <Typography variant="h6" component="div" gutterBottom>
+            Are Aligned Results Summary
+          </Typography>
+          <Typography variant="body2">
+            Total Items: {totalItems || 0} | 
+            Aligned: {alignedItems || 0} | 
+            Misaligned: {misalignedItems || 0} | 
+            Warnings: {warningItems || 0}
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            No detailed results available.
+          </Typography>
+        </Alert>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ mt: 2 }}>
+      {/* Summary */}
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <Typography variant="h6" component="div" gutterBottom>
+          Are Aligned Results Summary
+        </Typography>
+        <Typography variant="body2">
+          Total Items: {totalItems || 0} | 
+          Aligned: {alignedItems || 0} | 
+          Misaligned: {misalignedItems || 0} | 
+          Warnings: {warningItems || 0}
+        </Typography>
+      </Alert>
+
+      {/* Detailed Results Table */}
+      <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+        <Table stickyHeader size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Item Name</strong></TableCell>
+              <TableCell align="center"><strong>Status</strong></TableCell>
+              <TableCell><strong>Differences</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {resultsArray.map((result, index) => (
+              <TableRow 
+                key={index}
+                sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}
+              >
+                <TableCell component="th" scope="row">
+                  <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                    {result.itemName || 'Unknown'}
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
+                  <Chip 
+                    label={
+                      result.isAligned ? 'Aligned' : 
+                      result.isWarning ? 'Warning' : 'Misaligned'
+                    }
+                    color={
+                      result.isAligned ? 'success' : 
+                      result.isWarning ? 'warning' : 'error'
+                    }
+                    size="small"
+                  />
+                </TableCell>
+                <TableCell>
+                  {result.differences && result.differences.length > 0 ? (
+                    <Box>
+                      {result.differences.map((diff, diffIndex) => (
+                        <Typography 
+                          key={diffIndex}
+                          variant="body2" 
+                          sx={{ 
+                            fontFamily: 'monospace', 
+                            fontSize: '0.8rem',
+                            color: result.isAligned ? 'text.secondary' : 
+                                   result.isWarning ? 'warning.main' : 'error.main',
+                            mb: diffIndex < result.differences.length - 1 ? 0.5 : 0
+                          }}
+                        >
+                          {diff}
+                        </Typography>
+                      ))}
+                    </Box>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No differences
+                    </Typography>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 }
 

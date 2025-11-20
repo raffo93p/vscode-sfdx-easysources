@@ -10,6 +10,7 @@ import { useFormState } from './hooks/useFormState';
 import { useAppContext, AppProvider } from './context/AppContext';
 import { vscode } from "./index";
 import MyCheckbox from './components/MyCheckbox';
+import { CommandService } from './services/CommandService';
 
 
 // Componente interno che usa il context
@@ -78,6 +79,16 @@ function AppContent() {
           <img width={60} src={logo} alt="EasySources logo"/> 
           <h1 style={{paddingLeft:'1rem'}}>SFDX EasySources</h1>
           <div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem'}}>
+            {formState.viewDebugInfo && (
+              <Button 
+                size="small" 
+                variant="outlined" 
+                onClick={handleDebugState}
+                style={{height: 'fit-content'}}
+              >
+                Debug State
+              </Button>
+            )}
             <MyCheckbox
               checked={formState.viewDebugInfo}
               onChange={(event) => handleChangeCheckbox(event, "viewDebugInfo")}
@@ -85,18 +96,32 @@ function AppContent() {
               size={12}
             />
             <Button 
-              size="small" 
-              variant="outlined" 
-              onClick={handleDebugState}
+              variant="contained" 
+              color="primary" 
+              onClick={() => {
+                const validationError = CommandService.getValidationError(formState, settings);
+                if (validationError) {
+                  console.error(validationError);
+                  return;
+                }
+                try {
+                  const commandData = CommandService.buildExecutionCommand(formState, settings);
+                  console.log('Executing command:', commandData);
+                  executeCommand(commandData);
+                } catch (error) {
+                  console.error('Error building command:', error);
+                }
+              }}
+              disabled={!formState.metadata || !formState.action || !settings || isExecuting}
               style={{height: 'fit-content'}}
             >
-              Debug State
+              {isExecuting ? 'Executing...' : 'Execute Command'}
             </Button>
           </div>
         </header>
             
         <div>
-          <p>Welcome to the SFDX EasySources project! This is a test for the react-easysources project.</p>
+          <p>Welcome to the SFDX EasySources project! From here you can compose and run sfdx-easy-sources commands.</p>
           <GeneralForm 
             formState={formState}
             handleChangeSelect={handleChangeSelect}
@@ -112,7 +137,6 @@ function AppContent() {
             isExecuting={isExecuting}
             executionResult={executionResult}
             executionError={executionError}
-            onExecuteCommand={executeCommand}
           />
         </div>
       </div>

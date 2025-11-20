@@ -1,6 +1,5 @@
 import {readdirSync} from 'fs';
 import { join } from 'path';
-import { workspace } from 'vscode';
 
 export function getMetadataList(workspacePath: string, settings: any, metadata : string, objectName?: string) {
     const metadataFolderMap: {[key: string]: string} = {
@@ -50,7 +49,7 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
         const recordTypes = readdirSync(recordTypesPath, { withFileTypes: true })
             .filter(item => !item.isDirectory() && item.name.endsWith(metadataFilesuffixMap['recordtypes']))
             .map((item) => {
-                return {label: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,''), value: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,'')}
+                return {label: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,''), value: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,'')};
             });
         return recordTypes;
 
@@ -67,7 +66,7 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
         const files = readdirSync(join(workspacePath, defaultPath, metadata), { withFileTypes: true })
                 .filter(item => !item.isDirectory() && item.name.endsWith(metadataFilesuffixMap[metadata]))
                 .map((item) => {
-                    return {label: item.name.replace(`.${metadataFilesuffixMap[metadata]}`,''), value: item.name.replace(`.${metadataFilesuffixMap[metadata]}`,'')}
+                    return {label: item.name.replace(`.${metadataFilesuffixMap[metadata]}`,''), value: item.name.replace(`.${metadataFilesuffixMap[metadata]}`,'')};
                 });
         return files;
     }
