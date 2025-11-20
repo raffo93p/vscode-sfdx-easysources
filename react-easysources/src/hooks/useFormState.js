@@ -41,11 +41,11 @@ export function useFormState() {
   };
 
   const setSelectedInput = (selected) => {
-    setFormState(prev => ({ ...prev, selectedInput: selected }));
+    setFormState(prev => ({ ...prev, selectedInput: selected.sort() }));
   };
 
   const setSelectedRecordtype = (selected) => {
-    setFormState(prev => ({ ...prev, selectedRecordtype: selected }));
+    setFormState(prev => ({ ...prev, selectedRecordtype: selected.sort() }));
   };
 
   const handleChangeSelect = (event, whatSelect) => {

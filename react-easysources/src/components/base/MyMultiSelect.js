@@ -2,12 +2,21 @@ import React from "react";
 // import "./styles.css";
 import Select from "react-select";
 
+/**
+ * Multi-select component che accetta array di stringhe
+ * Converte internamente in formato {label, value} per react-select
+ */
 export default function MyMultiSelect({metadata, optionList, selectedOptions, setSelectedOptions}) {
 
+  // Converti array di stringhe in formato react-select {label, value}
+  const options = optionList.map(item => ({ label: item, value: item }));
+  const selected = selectedOptions ? selectedOptions.map(item => ({ label: item, value: item })) : null;
 
   // Function triggered on selection
   function handleSelect(data) {
-    setSelectedOptions(data);
+    // Converti da {label, value} a array di stringhe
+    const values = data ? data.map(item => item.value) : [];
+    setSelectedOptions(values);
   }
 
   const onInputChange = (
@@ -27,9 +36,9 @@ export default function MyMultiSelect({metadata, optionList, selectedOptions, se
         <Select
           onInputChange={onInputChange}
           closeMenuOnSelect={false}
-          options={optionList}
+          options={options}
           placeholder={"Select " + metadata}
-          value={selectedOptions}
+          value={selected}
           onChange={handleSelect}
           isSearchable={true}
           isMulti

@@ -51,7 +51,7 @@ export class CommandService {
     // Input (per tutti tranne labels e recordtypes)
     if (formState.selectInput && formState.selectedInput && formState.selectedInput.length > 0) {
       if (formState.metadata !== 'labels' && formState.metadata !== 'recordtypes') {
-        params.input = formState.selectedInput.map(item => item.value);
+        params.input = formState.selectedInput;
       }
     }
 
@@ -62,7 +62,7 @@ export class CommandService {
       }
       
       if (formState.selectRecordtype && formState.selectedRecordtype && formState.selectedRecordtype.length > 0) {
-        params.recordtype = formState.selectedRecordtype.map(item => item.value);
+        params.recordtype = formState.selectedRecordtype;
       }
     }
 
