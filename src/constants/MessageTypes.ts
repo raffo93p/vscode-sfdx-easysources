@@ -1,0 +1,36 @@
+/**
+ * Constants for message types exchanged between webview and extension
+ */
+
+/**
+ * Message types sent FROM webview TO extension
+ */
+export const INCOMING_MESSAGE_TYPES = {
+  DEBUG_LOG: 'DEBUG_LOG',
+  GET_METADATA_INPUT_LIST: 'GET_METADATA_INPUT_LIST',
+  READ_SETTINGS_FILE: 'READ_SETTINGS_FILE',
+  EXECUTE_API: 'EXECUTE_API',
+} as const;
+
+/**
+ * Message types sent FROM extension TO webview
+ */
+export const OUTGOING_MESSAGE_TYPES = {
+  SETTINGS_FILE_CONTENT: 'SETTINGS_FILE_CONTENT',
+  SETTINGS_FILE_NOT_FOUND: 'SETTINGS_FILE_NOT_FOUND',
+  GET_METADATA_INPUT_LIST_RESPONSE: 'GET_METADATA_INPUT_LIST_RESPONSE',
+  API_EXECUTION_RESULT: 'API_EXECUTION_RESULT',
+  API_EXECUTION_ERROR: 'API_EXECUTION_ERROR',
+} as const;
+
+/**
+ * All message types (union of incoming and outgoing)
+ */
+export const MESSAGE_TYPES = {
+  ...INCOMING_MESSAGE_TYPES,
+  ...OUTGOING_MESSAGE_TYPES,
+} as const;
+
+export type IncomingMessageType = typeof INCOMING_MESSAGE_TYPES[keyof typeof INCOMING_MESSAGE_TYPES];
+export type OutgoingMessageType = typeof OUTGOING_MESSAGE_TYPES[keyof typeof OUTGOING_MESSAGE_TYPES];
+export type MessageType = typeof MESSAGE_TYPES[keyof typeof MESSAGE_TYPES];

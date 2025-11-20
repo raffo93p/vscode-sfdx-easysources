@@ -1,4 +1,5 @@
 import { Webview } from 'vscode';
+import { OUTGOING_MESSAGE_TYPES } from '../constants/MessageTypes';
 
 export type WebviewMessageCommand = 
   | 'SETTINGS_FILE_CONTENT'
@@ -42,7 +43,7 @@ export class WebviewMessageService {
    */
   sendSettingsContent(settings: any, workspacePath?: string): void {
     this.postMessage({
-      command: 'SETTINGS_FILE_CONTENT',
+      command: OUTGOING_MESSAGE_TYPES.SETTINGS_FILE_CONTENT as WebviewMessageCommand,
       content: JSON.stringify(settings, null, 2),
       workspacePath
     });
@@ -53,7 +54,7 @@ export class WebviewMessageService {
    */
   sendSettingsNotFound(): void {
     this.postMessage({
-      command: 'SETTINGS_FILE_NOT_FOUND'
+      command: OUTGOING_MESSAGE_TYPES.SETTINGS_FILE_NOT_FOUND as WebviewMessageCommand
     });
   }
 
@@ -64,7 +65,7 @@ export class WebviewMessageService {
    */
   sendMetadataInputListResponse(metadata: string, metadataList: any[]): void {
     this.postMessage({
-      command: 'GET_METADATA_INPUT_LIST_RESPONSE',
+      command: OUTGOING_MESSAGE_TYPES.GET_METADATA_INPUT_LIST_RESPONSE as WebviewMessageCommand,
       metadata,
       metadataList
     });
@@ -76,7 +77,7 @@ export class WebviewMessageService {
    */
   sendApiExecutionResult(result: any): void {
     this.postMessage({
-      command: 'API_EXECUTION_RESULT',
+      command: OUTGOING_MESSAGE_TYPES.API_EXECUTION_RESULT as WebviewMessageCommand,
       result
     });
   }
@@ -87,7 +88,7 @@ export class WebviewMessageService {
    */
   sendApiExecutionError(error: string): void {
     this.postMessage({
-      command: 'API_EXECUTION_ERROR',
+      command: OUTGOING_MESSAGE_TYPES.API_EXECUTION_ERROR as WebviewMessageCommand,
       error
     });
   }

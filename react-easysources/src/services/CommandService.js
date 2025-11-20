@@ -1,5 +1,6 @@
 /**
  * Servizio per gestire la costruzione e l'esecuzione dei comandi API
+ * Gestisce sia i parametri API che la preview del comando CLI
  */
 export class CommandService {
   
@@ -34,85 +35,99 @@ export class CommandService {
   };
 
   /**
-   * Costruisce i parametri per l'API basandosi sullo stato del form
+   * Costruisce i parametri comuni dal form state
+   * @private
    * @param {Object} formState - Stato del form
-   * @returns {Object} Parametri per l'API
+   * @returns {Object} Parametri estratti dal form
    */
-  static buildApiParams(formState) {
-    const apiParams = {};
-    
-    // Aggiungi sort se presente
+  static _extractFormParams(formState) {
+    const params = {};
+
+    // Sort
     if (formState.sort) {
-      apiParams.sort = 'true';
+      params.sort = true;
     }
 
-    // Aggiungi input se selezionato (per tutti tranne labels e recordtypes)
+    // Input (per tutti tranne labels e recordtypes)
     if (formState.selectInput && formState.selectedInput && formState.selectedInput.length > 0) {
       if (formState.metadata !== 'labels' && formState.metadata !== 'recordtypes') {
-        apiParams.input = formState.selectedInput.map(item => item.value).join(',');
+        params.input = formState.selectedInput.map(item => item.value);
       }
     }
 
-    // Per recordtypes, aggiungi object se selezionato
+    // Object e recordtype (per recordtypes)
     if (formState.metadata === 'recordtypes') {
       if (formState.selectedObject) {
-        apiParams.object = formState.selectedObject;
+        params.object = formState.selectedObject;
       }
       
-      // Aggiungi recordtype specifici se selezionati
       if (formState.selectRecordtype && formState.selectedRecordtype && formState.selectedRecordtype.length > 0) {
-        apiParams.recordtype = formState.selectedRecordtype.map(item => item.value).join(',');
+        params.recordtype = formState.selectedRecordtype.map(item => item.value);
       }
     }
 
-    // Aggiungi campi specifici per l'azione delete
+    // Parametri specifici per azione delete
     if (formState.action === 'delete') {
       if (formState.metadata === 'recordtypes') {
-        // Campi specifici per recordtypes
-        if (formState.picklist) {
-          apiParams.picklist = formState.picklist;
-        }
-        if (formState.apiname) {
-          apiParams.apiname = formState.apiname;
-        }
+        if (formState.picklist) params.picklist = formState.picklist;
+        if (formState.apiname) params.apiname = formState.apiname;
       } else {
-        // Campi per profiles e permissionsets
-        if (formState.type) {
-          apiParams.type = formState.type;
-        }
-        if (formState.tagid) {
-          apiParams.tagid = formState.tagid;
-        }
+        if (formState.type) params.type = formState.type;
+        if (formState.tagid) params.tagid = formState.tagid;
       }
     }
 
-    // Aggiungi campi specifici per l'azione arealigned
+    // Parametri specifici per azione arealigned
     if (formState.action === 'arealigned') {
-      if (formState.mode) {
-        apiParams.mode = formState.mode;
-      }
+      if (formState.mode) params.mode = formState.mode;
     }
 
-    // Aggiungi campi specifici per l'azione customupsert
+    // Parametri specifici per azione customupsert
     if (formState.action === 'customupsert') {
-      if (formState.customUpsertType && formState.customUpsertValues) {
-        // Costruisci l'oggetto content con i valori degli headers
+      if (formState.customUpsertType) {
+        params.type = formState.customUpsertType;
+      }
+      if (formState.customUpsertValues) {
         const content = {};
         Object.keys(formState.customUpsertValues).forEach(key => {
           if (formState.customUpsertValues[key]) {
             content[key] = formState.customUpsertValues[key];
           }
         });
-        
-        // Aggiungi il content come stringa JSON
         if (Object.keys(content).length > 0) {
-          apiParams.content = JSON.stringify(content);
+          params.content = content;
         }
-        
-        // Aggiungi il type
-        apiParams.type = formState.customUpsertType;
       }
     }
+
+    return params;
+  }
+
+  /**
+   * Costruisce i parametri per l'API basandosi sullo stato del form
+   * @param {Object} formState - Stato del form
+   * @returns {Object} Parametri per l'API
+   */
+  static buildApiParams(formState) {
+    const params = this._extractFormParams(formState);
+    const apiParams = {};
+
+    // Converti i parametri in formato API
+    Object.keys(params).forEach(key => {
+      if (key === 'input' || key === 'recordtype') {
+        // Array da convertire in stringa separata da virgole
+        apiParams[key] = params[key].join(',');
+      } else if (key === 'content') {
+        // Oggetto da convertire in JSON string
+        apiParams[key] = JSON.stringify(params[key]);
+      } else if (key === 'sort') {
+        // Boolean da convertire in stringa
+        apiParams[key] = 'true';
+      } else {
+        // Altri parametri passati così come sono
+        apiParams[key] = params[key];
+      }
+    });
 
     return apiParams;
   }
@@ -231,5 +246,44 @@ export class CommandService {
     apiStr += ')';
     
     return apiStr;
+  }
+
+  /**
+   * Costruisce il comando CLI (sf easysources) per display/debug
+   * @param {Object} formState - Stato del form
+   * @returns {string} Comando formattato per CLI
+   */
+  static buildCliCommand(formState) {
+    if (!formState.metadata || !formState.action) {
+      return '';
+    }
+
+    const params = this._extractFormParams(formState);
+    let cmdString = `sf easysources ${formState.metadata} ${formState.action}`;
+
+    // Costruisci i flag dalla mappa dei parametri
+    Object.keys(params).forEach(key => {
+      const value = params[key];
+      
+      if (key === 'sort') {
+        // Sort è un flag boolean, non serve valore
+        // Deprecato, quindi non lo includiamo
+        return;
+      }
+      
+      if (key === 'input' || key === 'recordtype') {
+        // Array: sorta e join con virgola
+        const sortedValue = value.sort().join(',');
+        cmdString += ` --${key} "${sortedValue}"`;
+      } else if (key === 'content') {
+        // Oggetto: converti in JSON
+        cmdString += ` --${key} '${JSON.stringify(value)}'`;
+      } else {
+        // Stringa semplice
+        cmdString += ` --${key} "${value}"`;
+      }
+    });
+
+    return cmdString;
   }
 }

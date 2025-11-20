@@ -2,6 +2,7 @@
 // it must comunicate with the backend to read the files
 
 import Logger from './Logger';
+import { OUTGOING_MESSAGE_TYPES } from '../constants/MessageTypes';
 import { applications, globalvaluesets, globalvaluesettranslations, objecttranslations, permissionsets, profiles, recordtypes, translations, objects } from "./Mock";
 
 // used when 'select input' is selected
@@ -27,7 +28,12 @@ export function getMetadataInputList(settings, metadata, vscode, selectedObject)
 
     if (metadataMap.hasOwnProperty(metadata)) {
         if (vscode) {
-            vscode.postMessage({settings, command: 'GET_METADATA_INPUT_LIST', metadata, objectName: selectedObject });
+            vscode.postMessage({
+                settings, 
+                command: OUTGOING_MESSAGE_TYPES.GET_METADATA_INPUT_LIST, 
+                metadata, 
+                objectName: selectedObject 
+            });
             return [];
         } else {
             return metadataMap[metadata];

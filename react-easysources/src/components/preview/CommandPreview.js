@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, Snackbar } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
-import { calculateCommand } from '../../utils/CmdCalculator';
+import { CommandService } from '../../services/CommandService';
 
 /**
  * Componente per visualizzare il comando calcolato in tempo reale
  */
 function CommandPreview({ formState }) {
   const [showCopied, setShowCopied] = useState(false);
-  const commandString = calculateCommand(formState);
+  const commandString = CommandService.buildCliCommand(formState);
 
   if (!commandString) {
     return null;

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import Logger from '../utils/Logger';
+import { ACTION_TYPES, INCOMING_MESSAGE_TYPES, LIST_TYPES, METADATA_TYPES } from '../constants/MessageTypes';
 
 // Initial state per il global state
 export const initialState = {
@@ -17,13 +18,13 @@ export const initialState = {
 // Reducer per gestire il global state
 export function appReducer(state, action) {
   switch (action.type) {
-    case 'UPDATE_STATE':
+    case ACTION_TYPES.UPDATE_STATE:
         return {
             ...state,
             ...action.payload
         };
     
-    case 'SET_SETTINGS':
+    case ACTION_TYPES.SET_SETTINGS:
       return {
         ...state,
         settings: action.payload.settings,
@@ -31,28 +32,15 @@ export function appReducer(state, action) {
         isLoading: false
       };
     
-    case 'UPDATE_AVAILABLE_INPUT':
+    case ACTION_TYPES.UPDATE_AVAILABLE_LIST:
+      // Generico per availableInput, availableObjects, availableRecordtypes
       return {
         ...state,
-        availableInput: action.payload || [],
+        [action.listType]: action.payload || [],
         isLoading: false
       };
     
-    case 'UPDATE_AVAILABLE_OBJECTS':
-      return {
-        ...state,
-        availableObjects: action.payload || [],
-        isLoading: false
-      };
-    
-    case 'UPDATE_AVAILABLE_RECORDTYPES':
-      return {
-        ...state,
-        availableRecordtypes: action.payload || [],
-        isLoading: false
-      };
-    
-    case 'SET_EXECUTION_RESULT':
+    case ACTION_TYPES.SET_EXECUTION_RESULT:
       return {
         ...state,
         executionResult: action.payload,
@@ -60,7 +48,7 @@ export function appReducer(state, action) {
         isExecuting: false
       };
     
-    case 'SET_EXECUTION_ERROR':
+    case ACTION_TYPES.SET_EXECUTION_ERROR:
       return {
         ...state,
         executionError: action.payload,
@@ -68,13 +56,13 @@ export function appReducer(state, action) {
         isExecuting: false
       };
     
-    case 'SET_LOADING':
+    case ACTION_TYPES.SET_LOADING:
       return {
         ...state,
         isLoading: action.payload
       };
     
-    case 'SET_EXECUTING':
+    case ACTION_TYPES.SET_EXECUTING:
       return {
         ...state,
         isExecuting: true,
@@ -82,7 +70,7 @@ export function appReducer(state, action) {
         executionError: null
       };
     
-    case 'RESET_EXECUTION_STATE':
+    case ACTION_TYPES.RESET_EXECUTION_STATE:
       return {
         ...state,
         executionResult: null,
@@ -90,7 +78,7 @@ export function appReducer(state, action) {
         isExecuting: false
       };
     
-    case 'CLEAR_LISTS':
+    case ACTION_TYPES.CLEAR_LISTS:
       return {
         ...state,
         availableInput: [],
@@ -117,40 +105,38 @@ export function AppProvider({ children }) {
       Logger.debug('Received message from extension:', message);
       
       switch (message.command) {
-        case 'GET_METADATA_INPUT_LIST_RESPONSE':
+        case INCOMING_MESSAGE_TYPES.GET_METADATA_INPUT_LIST_RESPONSE:
           Logger.debug('GET_METADATA_INPUT_LIST_RESPONSE', message.metadataList);
           
-          // Determina se è per input generico, objects o recordtypes
-          if (message.metadata === 'object') {
-            dispatch({ 
-              type: 'UPDATE_AVAILABLE_OBJECTS', 
-              payload: message.metadataList 
-            });
-          } else if (message.metadata === 'recordtypes') {
-            dispatch({ 
-              type: 'UPDATE_AVAILABLE_RECORDTYPES', 
-              payload: message.metadataList 
-            });
+          // Determina quale lista aggiornare basandosi sul tipo di metadata
+          let listType;
+          if (message.metadata === METADATA_TYPES.OBJECT) {
+            listType = LIST_TYPES.AVAILABLE_OBJECTS;
+          } else if (message.metadata === METADATA_TYPES.RECORD_TYPES) {
+            listType = LIST_TYPES.AVAILABLE_RECORDTYPES;
           } else {
-            dispatch({ 
-              type: 'UPDATE_AVAILABLE_INPUT', 
-              payload: message.metadataList 
-            });
+            listType = LIST_TYPES.AVAILABLE_INPUT;
           }
+          
+          dispatch({ 
+            type: ACTION_TYPES.UPDATE_AVAILABLE_LIST,
+            listType,
+            payload: message.metadataList 
+          });
           break;
           
-        case 'API_EXECUTION_RESULT':
+        case INCOMING_MESSAGE_TYPES.API_EXECUTION_RESULT:
           Logger.log('API_EXECUTION_RESULT');
           dispatch({ 
-            type: 'SET_EXECUTION_RESULT', 
+            type: ACTION_TYPES.SET_EXECUTION_RESULT, 
             payload: message.result 
           });
           break;
         
-        case 'API_EXECUTION_ERROR':
+        case INCOMING_MESSAGE_TYPES.API_EXECUTION_ERROR:
           Logger.error('API_EXECUTION_ERROR', message.error);
           dispatch({ 
-            type: 'SET_EXECUTION_ERROR', 
+            type: ACTION_TYPES.SET_EXECUTION_ERROR, 
             payload: message.error 
           });
           break;

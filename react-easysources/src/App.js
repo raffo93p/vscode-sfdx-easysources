@@ -12,6 +12,7 @@ import { vscode } from "./index";
 import MyCheckbox from './components/base/MyCheckbox';
 import { CommandService } from './services/CommandService';
 import Logger from './utils/Logger';
+import { OUTGOING_MESSAGE_TYPES } from './constants/MessageTypes';
 
 
 // Componente interno che usa il context
@@ -56,7 +57,7 @@ function AppContent() {
   const handleDebugState = () => {
     if (vscode && vscode.postMessage) {
       vscode.postMessage({ 
-        command: 'DEBUG_LOG', 
+        command: OUTGOING_MESSAGE_TYPES.DEBUG_LOG, 
         data: JSON.stringify({ 
           formState, 
           settings, 

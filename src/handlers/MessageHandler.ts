@@ -4,6 +4,7 @@ import { ApiService } from '../services/ApiService';
 import { getMetadataList } from '../utilities/selectUtils';
 import { window, workspace } from 'vscode';
 import { Logger } from '../utilities/Logger';
+import { INCOMING_MESSAGE_TYPES } from '../constants/MessageTypes';
 
 /**
  * Gestisce i messaggi in arrivo dal webview
@@ -25,16 +26,16 @@ export class MessageHandler {
     Logger.debug(`Handling message: ${command}`);
 
     switch (command) {
-      case "DEBUG_LOG":
+      case INCOMING_MESSAGE_TYPES.DEBUG_LOG:
         this.handleDebugLog(message);
         break;
-      case "GET_METADATA_INPUT_LIST":
+      case INCOMING_MESSAGE_TYPES.GET_METADATA_INPUT_LIST:
         await this.handleGetMetadataInputList(message);
         break;
-      case "READ_SETTINGS_FILE":
+      case INCOMING_MESSAGE_TYPES.READ_SETTINGS_FILE:
         this.handleReadSettingsFile();
         break;
-      case "EXECUTE_API":
+      case INCOMING_MESSAGE_TYPES.EXECUTE_API:
         await this.handleExecuteApi(message);
         break;
       default:
@@ -111,7 +112,6 @@ export class MessageHandler {
       } else if (result['result'] === 'ERROR' || result['result'] === 'KO') {
         this.messageService.sendApiExecutionError(result['error'] || 'API execution error');
       }
-      window.showInformationMessage(`${apiNamespace}.${action} executed successfully!`);
       
     } catch (error) {
       Logger.error('Error executing API command:', error);

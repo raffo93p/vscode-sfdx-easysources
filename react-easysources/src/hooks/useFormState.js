@@ -3,6 +3,7 @@ import { metadataAction_params } from '../utils/Config';
 import { getMetadataInputList } from '../utils/MdtSelectUtils';
 import { vscode } from '../index';
 import { useAppContext } from '../context/AppContext';
+import { ACTION_TYPES } from '../constants/MessageTypes';
 
 /**
  * Hook per gestire lo stato del form principale
@@ -71,8 +72,8 @@ export function useFormState() {
       updates.customUpsertValues = {};
       
       // Reset global state
-      dispatch({ type: 'RESET_EXECUTION_STATE' });
-      dispatch({ type: 'CLEAR_LISTS' });
+      dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
+      dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
     }
 
     if (whatSelect === "selectedObject") {
@@ -115,17 +116,17 @@ export function useFormState() {
     const updates = { [whatCheckbox]: checked };
 
     if (whatCheckbox === "selectInput" && checked) {
-      dispatch({ type: 'SET_LOADING', payload: true });
+      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
       getMetadataInputList(settings, formState.metadata, vscode);
     }
 
     if (whatCheckbox === "selectRecordtype" && checked) {
-      dispatch({ type: 'SET_LOADING', payload: true });
+      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
       getMetadataInputList(settings, formState.metadata, vscode, formState.selectedObject);
     }
 
     if (whatCheckbox === "selectObject" && checked) {
-      dispatch({ type: 'SET_LOADING', payload: true });
+      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
       getMetadataInputList(settings, "object", vscode);
     }
 
