@@ -9,16 +9,16 @@ import { useSettings, useApiExecution } from './hooks/useSettings';
 import { useFormState } from './hooks/useFormState';
 import { useAppContext, AppProvider } from './context/AppContext';
 import { vscode } from "./index";
-import MyCheckbox from './components/MyCheckbox';
+import MyCheckbox from './components/base/MyCheckbox';
 import { CommandService } from './services/CommandService';
 
 
 // Componente interno che usa il context
 function AppContent() {
   // Hooks per gestire lo stato dell'applicazione
-  const { settings, workspacePath, isLoading } = useSettings();
+  useSettings(); // Carica le settings nel Context
   const { executeCommand } = useApiExecution();
-  const { state } = useAppContext(); // Otteniamo il global state
+  const { state } = useAppContext();
   
   const { 
     formState, 
@@ -27,16 +27,19 @@ function AppContent() {
     handleChangeText,
     setSelectedInput,
     setSelectedRecordtype
-  } = useFormState(settings);
+  } = useFormState();
 
   // Estraiamo i dati dal global state
   const { 
+    settings,
+    workspacePath,
     availableInput, 
     availableObjects, 
     availableRecordtypes,
     isExecuting,
     executionResult,
-    executionError
+    executionError,
+    isLoading
   } = state;
 
   // Theme configuration
@@ -129,14 +132,6 @@ function AppContent() {
             handleChangeText={handleChangeText}
             setSelectedInput={setSelectedInput}
             setSelectedRecordtype={setSelectedRecordtype}
-            settings={settings}
-            workspacePath={workspacePath}
-            availableInput={availableInput}
-            availableObjects={availableObjects}
-            availableRecordtypes={availableRecordtypes}
-            isExecuting={isExecuting}
-            executionResult={executionResult}
-            executionError={executionError}
           />
         </div>
       </div>

@@ -1,10 +1,14 @@
 import React from 'react';
 import { Grid, Alert } from '@mui/material';
+import { useAppContext } from '../../context/AppContext';
 
 /**
  * Componente per visualizzare il form state in modalità debug
  */
-function FormStateDebug({ formState, settings, workspacePath, availableInput, availableObjects, availableRecordtypes, isExecuting, executionResult, executionError }) {
+function FormStateDebug({ formState }) {
+  const { state } = useAppContext();
+  const { settings, workspacePath, availableInput, availableObjects, availableRecordtypes, isExecuting, executionResult, executionError } = state;
+  
   const debugData = {
     formState,
     settings: settings ? 'Loaded' : 'Not loaded',

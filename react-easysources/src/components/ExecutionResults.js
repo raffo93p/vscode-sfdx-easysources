@@ -2,11 +2,15 @@ import React from 'react';
 import { Grid, Alert, Typography, Box } from '@mui/material';
 import { CheckCircle, Error } from '@mui/icons-material';
 import ResultsTable from './ResultsTable';
+import { useAppContext } from '../context/AppContext';
 
 /**
  * Componente per visualizzare i risultati dell'esecuzione
  */
-function ExecutionResults({ executionResult, executionError, viewDebugInfo, action }) {
+function ExecutionResults({ viewDebugInfo, action }) {
+  const { state } = useAppContext();
+  const { executionResult, executionError } = state;
+  
   if (executionError) {
     return (
       <Grid container spacing={2} style={{marginTop: '1rem'}}>

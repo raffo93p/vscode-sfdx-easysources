@@ -7,8 +7,9 @@ import { useAppContext } from '../context/AppContext';
 /**
  * Hook per gestire lo stato del form principale
  */
-export function useFormState(settings) {
-  const { dispatch } = useAppContext();
+export function useFormState() {
+  const { dispatch, state } = useAppContext();
+  const { settings } = state;
   
   const [formState, setFormState] = useState({
     metadata: '',

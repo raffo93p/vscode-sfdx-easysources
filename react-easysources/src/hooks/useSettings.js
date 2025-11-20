@@ -3,12 +3,10 @@ import { vscode } from '../index';
 import { useAppContext } from '../context/AppContext';
 
 /**
- * Hook personalizzato per gestire le settings
+ * Hook personalizzato per gestire le settings - ora usa il global state
  */
 export function useSettings() {
-  const [settings, setSettings] = useState(null);
-  const [workspacePath, setWorkspacePath] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { dispatch } = useAppContext();
 
   useEffect(() => {
     // Prova a leggere il file easysources-settings.json tramite l'API VSCode
@@ -20,21 +18,31 @@ export function useSettings() {
     const handler = (event) => {
       const message = event.data;
       if (message.command === 'SETTINGS_FILE_CONTENT') {
-        setSettings(JSON.parse(message.content));
-        setWorkspacePath(message.workspacePath);
-        setIsLoading(false);
+        dispatch({ 
+          type: 'SET_SETTINGS', 
+          payload: {
+            settings: JSON.parse(message.content),
+            workspacePath: message.workspacePath
+          }
+        });
       }
       if (message.command === 'SETTINGS_FILE_NOT_FOUND') {
-        setSettings(null);
-        setIsLoading(false);
+        dispatch({ 
+          type: 'SET_SETTINGS', 
+          payload: {
+            settings: null,
+            workspacePath: null
+          }
+        });
       }
     };
 
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, []);
+  }, [dispatch]);
 
-  return { settings, workspacePath, isLoading };
+  // Non restituiamo più nulla, i dati sono nel Context
+  return {};
 }
 
 /**

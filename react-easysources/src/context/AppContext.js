@@ -8,7 +8,9 @@ export const initialState = {
   executionResult: null,
   executionError: null,
   isLoading: false,
-  isExecuting: false
+  isExecuting: false,
+  settings: null,
+  workspacePath: null
 };
 
 // Reducer per gestire il global state
@@ -19,6 +21,15 @@ export function appReducer(state, action) {
             ...state,
             ...action.payload
         };
+    
+    case 'SET_SETTINGS':
+      return {
+        ...state,
+        settings: action.payload.settings,
+        workspacePath: action.payload.workspacePath,
+        isLoading: false
+      };
+    
     case 'UPDATE_AVAILABLE_INPUT':
       return {
         ...state,

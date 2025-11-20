@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import MySelect from './MySelect';
-import MyTextField from './MyTextField';
-import { getCustomUpsertTypeOptions, getHeadersForType } from '../utils/CustomUpsertConfig';
+import MySelect from '../base/MySelect';
+import MyTextField from '../base/MyTextField';
+import { getCustomUpsertTypeOptions, getHeadersForType } from '../../utils/CustomUpsertConfig';
 
 /**
  * Componente per i campi specifici dell'azione Custom Upsert

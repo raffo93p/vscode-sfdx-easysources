@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import MySelect from './MySelect';
+import MySelect from '../base/MySelect';
 
 /**
  * Componente per i campi specifici dell'azione Are Aligned

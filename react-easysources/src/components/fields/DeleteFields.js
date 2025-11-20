@@ -1,8 +1,8 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import MySelect from './MySelect';
-import MyTextField from './MyTextField';
-import { metadataAction_params } from '../utils/Config';
+import MySelect from '../base/MySelect';
+import MyTextField from '../base/MyTextField';
+import { metadataAction_params } from '../../utils/Config';
 
 /**
  * Componente per i campi specifici dell'azione Delete

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, IconButton, Snackbar } from '@mui/material';
 import { ContentCopy } from '@mui/icons-material';
-import { calculateCommand } from '../utils/CmdCalculator';
+import { calculateCommand } from '../../utils/CmdCalculator';
 
 /**
  * Componente per visualizzare il comando calcolato in tempo reale

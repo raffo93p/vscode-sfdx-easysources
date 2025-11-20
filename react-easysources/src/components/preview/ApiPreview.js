@@ -1,11 +1,15 @@
 import React from 'react';
 import { Alert } from '@mui/material';
-import { CommandService } from '../services/CommandService';
+import { CommandService } from '../../services/CommandService';
+import { useAppContext } from '../../context/AppContext';
 
 /**
  * Componente per mostrare il preview del comando
  */
-function ApiPreview({ formState, settings, workspacePath }) {
+function ApiPreview({ formState }) {
+  const { state } = useAppContext();
+  const { settings, workspacePath } = state;
+  
   return (
     <Alert severity="info">
       <strong>Api Preview:</strong>

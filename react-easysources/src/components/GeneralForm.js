@@ -1,16 +1,17 @@
 import React from 'react';
 import { Grid, Divider } from '@mui/material';
 import { optionsMdt, optionsAct } from '../utils/Config';
-import MyMultiSelect from './MyMultiSelect';
-import MySelect from './MySelect';
-import MyCheckbox from './MyCheckbox';
-import ApiPreview from './ApiPreview';
-import CommandPreview from './CommandPreview';
+import MyMultiSelect from './base/MyMultiSelect';
+import MySelect from './base/MySelect';
+import MyCheckbox from './base/MyCheckbox';
+import ApiPreview from './preview/ApiPreview';
+import CommandPreview from './preview/CommandPreview';
 import ExecutionResults from './ExecutionResults';
-import FormStateDebug from './FormStateDebug';
-import DeleteFields from './DeleteFields';
-import AreAlignedFields from './AreAlignedFields';
-import CustomUpsertFields from './CustomUpsertFields';
+import FormStateDebug from './preview/FormStateDebug';
+import DeleteFields from './fields/DeleteFields';
+import AreAlignedFields from './fields/AreAlignedFields';
+import CustomUpsertFields from './fields/CustomUpsertFields';
+import { useAppContext } from '../context/AppContext';
 
 /**
  * Componente principale del form per configurare ed eseguire i comandi
@@ -21,16 +22,15 @@ function GeneralForm({
   handleChangeCheckbox,
   handleChangeText,
   setSelectedInput,
-  setSelectedRecordtype,
-  settings, 
-  workspacePath,
-  availableInput,
-  availableObjects,
-  availableRecordtypes,
-  isExecuting,
-  executionResult,
-  executionError
+  setSelectedRecordtype
 }) {
+  // Leggiamo solo i dati necessari dal Context
+  const { state } = useAppContext();
+  const { 
+    availableInput,
+    availableObjects,
+    availableRecordtypes
+  } = state;
 
   return (
     <div>
@@ -169,11 +169,7 @@ function GeneralForm({
       {formState.viewDebugInfo && (
         <Grid container spacing={2} style={{marginTop: '1rem'}}>
           <Grid item xs={12}>
-            <ApiPreview 
-              formState={formState}
-              settings={settings}
-              workspacePath={workspacePath}
-            />
+            <ApiPreview formState={formState} />
           </Grid>
         </Grid>
       )}
@@ -183,25 +179,13 @@ function GeneralForm({
 
       {/* Results Display */}
       <ExecutionResults 
-        executionResult={executionResult}
-        executionError={executionError}
         viewDebugInfo={formState.viewDebugInfo}
         action={formState.action}
       />
 
       {/* Form State Debug Info - only show if debug info is enabled */}
       {formState.viewDebugInfo && (
-        <FormStateDebug
-          formState={formState}
-          settings={settings}
-          workspacePath={workspacePath}
-          availableInput={availableInput}
-          availableObjects={availableObjects}
-          availableRecordtypes={availableRecordtypes}
-          isExecuting={isExecuting}
-          executionResult={executionResult}
-          executionError={executionError}
-        />
+        <FormStateDebug formState={formState} />
       )}
     </div>
   );
