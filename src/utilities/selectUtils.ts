@@ -50,7 +50,7 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
         const recordTypes = readdirSync(recordTypesPath, { withFileTypes: true })
             .filter(item => !item.isDirectory() && item.name.endsWith(metadataFilesuffixMap['recordtypes']))
             .map((item) => {
-                return {label: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,''), value: item.name.replace(`.${metadataFilesuffixMap['recordtypes']},`,'')}
+                return {label: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,''), value: item.name.replace(`.${metadataFilesuffixMap['recordtypes']}`,'')}
             });
         return recordTypes;
 
