@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { metadataAction_params } from '../utils/Config';
 import { getMetadataInputList } from '../utils/MdtSelectUtils';
 import { vscode } from '../index';
@@ -10,7 +10,7 @@ import { ACTION_TYPES } from '../constants/MessageTypes';
  */
 export function useFormState() {
   const { dispatch, state } = useAppContext();
-  const { settings } = state;
+  const { settings, availableInput, availableRecordtypes } = state;
   
   const [formState, setFormState] = useState({
     metadata: '',
@@ -106,6 +106,15 @@ export function useFormState() {
       updates.mode = actionConfig?.mode ?? 'string';
       updates.customUpsertType = '';
       updates.customUpsertValues = {};
+      
+      // Ricarica le liste se le checkbox sono già spuntate
+      // Questo perché cambiando action, le liste disponibili potrebbero cambiare (XML vs CSV)
+      const needsReload = formState.selectInput || formState.selectObject || formState.selectRecordtype;
+      
+      if (needsReload) {
+        // Triggera il reload delle liste (verrà gestito in useEffect)
+        updates._reloadLists = true;
+      }
     }
 
     setFormState(prev => ({ ...prev, ...updates }));
@@ -117,17 +126,17 @@ export function useFormState() {
 
     if (whatCheckbox === "selectInput" && checked) {
       dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
-      getMetadataInputList(settings, formState.metadata, vscode);
+      getMetadataInputList(settings, formState.metadata, vscode, null, formState.action);
     }
 
     if (whatCheckbox === "selectRecordtype" && checked) {
       dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
-      getMetadataInputList(settings, formState.metadata, vscode, formState.selectedObject);
+      getMetadataInputList(settings, formState.metadata, vscode, formState.selectedObject, formState.action);
     }
 
     if (whatCheckbox === "selectObject" && checked) {
       dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
-      getMetadataInputList(settings, "object", vscode);
+      getMetadataInputList(settings, "object", vscode, null, formState.action);
     }
 
     setFormState(prev => ({ ...prev, ...updates }));
@@ -150,6 +159,52 @@ export function useFormState() {
       setFormState(prev => ({ ...prev, [whatField]: value }));
     }
   };
+
+  // Effetto per ricaricare le liste quando cambia l'action e per filtrare i selected
+  useEffect(() => {
+    // Ricarica le liste se necessario
+    if (formState._reloadLists) {
+      // Rimuovi il flag
+      setFormState(prev => {
+        const newState = { ...prev };
+        delete newState._reloadLists;
+        return newState;
+      });
+
+      // Ricarica le liste attive
+      if (formState.selectInput) {
+        dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
+        getMetadataInputList(settings, formState.metadata, vscode, null, formState.action);
+      }
+      if (formState.selectObject) {
+        dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
+        getMetadataInputList(settings, "object", vscode, null, formState.action);
+      }
+      if (formState.selectRecordtype && formState.selectedObject) {
+        dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
+        getMetadataInputList(settings, formState.metadata, vscode, formState.selectedObject, formState.action);
+      }
+    }
+  }, [formState._reloadLists, formState.selectInput, formState.selectObject, formState.selectRecordtype, formState.selectedObject, formState.metadata, formState.action, settings, dispatch]);
+
+  // Effetto per filtrare i selected quando cambiano le liste available
+  useEffect(() => {
+    if (formState.selectedInput && formState.selectedInput.length > 0) {
+      const filtered = formState.selectedInput.filter(item => availableInput.includes(item));
+      if (filtered.length !== formState.selectedInput.length) {
+        setFormState(prev => ({ ...prev, selectedInput: filtered.length > 0 ? filtered : null }));
+      }
+    }
+  }, [availableInput, formState.selectedInput]);
+
+  useEffect(() => {
+    if (formState.selectedRecordtype && formState.selectedRecordtype.length > 0) {
+      const filtered = formState.selectedRecordtype.filter(item => availableRecordtypes.includes(item));
+      if (filtered.length !== formState.selectedRecordtype.length) {
+        setFormState(prev => ({ ...prev, selectedRecordtype: filtered.length > 0 ? filtered : null }));
+      }
+    }
+  }, [availableRecordtypes, formState.selectedRecordtype]);
 
   return {
     formState,

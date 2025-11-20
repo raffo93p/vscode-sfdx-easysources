@@ -6,8 +6,8 @@ import { OUTGOING_MESSAGE_TYPES } from '../constants/MessageTypes';
 import { applications, globalvaluesets, globalvaluesettranslations, objecttranslations, permissionsets, profiles, recordtypes, translations, objects } from "./Mock";
 
 // used when 'select input' is selected
-export function getMetadataInputList(settings, metadata, vscode, selectedObject) {
-    Logger.debug('getMetadataInputList:', metadata);
+export function getMetadataInputList(settings, metadata, vscode, selectedObject, action) {
+    Logger.debug('getMetadataInputList:', metadata, 'action:', action);
 
     const metadataMap = {
         applications,
@@ -32,7 +32,8 @@ export function getMetadataInputList(settings, metadata, vscode, selectedObject)
                 settings, 
                 command: OUTGOING_MESSAGE_TYPES.GET_METADATA_INPUT_LIST, 
                 metadata, 
-                objectName: selectedObject 
+                objectName: selectedObject,
+                action 
             });
             return [];
         } else {

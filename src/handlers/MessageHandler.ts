@@ -51,7 +51,8 @@ export class MessageHandler {
   private async handleGetMetadataInputList(message: IncomingMessage): Promise<void> {
     Logger.debug('GET_METADATA_INPUT_LIST', { 
       metadata: message.metadata, 
-      objectName: message.objectName 
+      objectName: message.objectName,
+      action: message.action 
     });
 
     const workspaceFolder = workspace.workspaceFolders?.[0];
@@ -65,7 +66,8 @@ export class MessageHandler {
       workspacePath, 
       message.settings, 
       message.metadata, 
-      message.objectName
+      message.objectName,
+      message.action
     );
     
     this.messageService.sendMetadataInputListResponse(message.metadata, metadataList);
