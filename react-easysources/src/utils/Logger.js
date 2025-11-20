@@ -1,9 +1,10 @@
 /**
  * Centralized logging utility for the React application
- * Logs can be disabled in production by checking the environment
+ * Logs can be disabled in production by setting isDevelopment to false
  */
 class Logger {
-  static isDevelopment = process.env.NODE_ENV === 'development';
+  static isDevelopment = true; // Set to false for production builds
+
 
   /**
    * Log general information (only in development mode)
