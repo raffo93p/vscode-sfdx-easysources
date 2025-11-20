@@ -1,11 +1,12 @@
 // this method returns the list of metadata inputs for the metadata selected
 // it must comunicate with the backend to read the files
 
+import Logger from './Logger';
 import { applications, globalvaluesets, globalvaluesettranslations, objecttranslations, permissionsets, profiles, recordtypes, translations, objects } from "./Mock";
 
 // used when 'select input' is selected
 export function getMetadataInputList(settings, metadata, vscode, selectedObject) {
-    console.log('getMetadataInputList: ' + metadata);
+    Logger.debug('getMetadataInputList:', metadata);
 
     const metadataMap = {
         applications,

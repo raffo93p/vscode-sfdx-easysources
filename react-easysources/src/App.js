@@ -11,6 +11,7 @@ import { useAppContext, AppProvider } from './context/AppContext';
 import { vscode } from "./index";
 import MyCheckbox from './components/base/MyCheckbox';
 import { CommandService } from './services/CommandService';
+import Logger from './utils/Logger';
 
 
 // Componente interno che usa il context
@@ -104,15 +105,15 @@ function AppContent() {
               onClick={() => {
                 const validationError = CommandService.getValidationError(formState, settings);
                 if (validationError) {
-                  console.error(validationError);
+                  Logger.error('Validation error:', validationError);
                   return;
                 }
                 try {
                   const commandData = CommandService.buildExecutionCommand(formState, settings);
-                  console.log('Executing command:', commandData);
+                  Logger.log('Executing command:', commandData);
                   executeCommand(commandData);
                 } catch (error) {
-                  console.error('Error building command:', error);
+                  Logger.error('Error building command:', error);
                 }
               }}
               disabled={!formState.metadata || !formState.action || !settings || isExecuting}

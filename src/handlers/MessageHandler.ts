@@ -3,6 +3,7 @@ import { SettingsService } from '../services/SettingsService';
 import { ApiService } from '../services/ApiService';
 import { getMetadataList } from '../utilities/selectUtils';
 import { window, workspace } from 'vscode';
+import { Logger } from '../utilities/Logger';
 
 /**
  * Gestisce i messaggi in arrivo dal webview
@@ -21,18 +22,9 @@ export class MessageHandler {
   async handleMessage(message: IncomingMessage): Promise<void> {
     const command = message.command;
     
-    console.log(`Handling message: ${command}`);
+    Logger.debug(`Handling message: ${command}`);
 
     switch (command) {
-      case "hello":
-        this.handleHello(message);
-        break;
-      case "ciao":
-        this.handleCiao(message);
-        break;
-      case "squarePushed":
-        this.handleSquarePushed(message);
-        break;
       case "DEBUG_LOG":
         this.handleDebugLog(message);
         break;
@@ -46,33 +38,20 @@ export class MessageHandler {
         await this.handleExecuteApi(message);
         break;
       default:
-        console.warn(`Unknown command: ${command}`);
+        Logger.warn(`Unknown command: ${command}`);
         break;
     }
   }
 
-  private handleHello(message: IncomingMessage): void {
-    window.showInformationMessage(message.text);
-  }
-
-  private handleCiao(message: IncomingMessage): void {
-    console.log('ciao');
-    window.showInformationMessage(message.text);
-  }
-
-  private handleSquarePushed(message: IncomingMessage): void {
-    console.log('squarePushed');
-    window.showInformationMessage(message.text);
-  }
-
   private handleDebugLog(message: IncomingMessage): void {
-    console.log('DEBUG_LOG');
-    console.log(message.data);
+    Logger.debug('DEBUG_LOG from webview:', message.data);
   }
 
   private async handleGetMetadataInputList(message: IncomingMessage): Promise<void> {
-    console.log('GET_METADATA_INPUT_LIST');
-    console.log('Message: ', message, 'objectName:', message.objectName);
+    Logger.debug('GET_METADATA_INPUT_LIST', { 
+      metadata: message.metadata, 
+      objectName: message.objectName 
+    });
 
     const workspaceFolder = workspace.workspaceFolders?.[0];
     if (!workspaceFolder) {
@@ -92,20 +71,23 @@ export class MessageHandler {
   }
 
   private handleReadSettingsFile(): void {
-    console.log('READ_SETTINGS_FILE');
+    Logger.debug('READ_SETTINGS_FILE');
     
     const { settings, workspacePath } = SettingsService.readSettingsFile();
     
     if (settings && workspacePath) {
       this.messageService.sendSettingsContent(settings, workspacePath);
-      console.log('Settings file content sent to webview: ', JSON.stringify(settings, null, 2));
+      Logger.log('Settings file content sent to webview');
     } else {
       this.messageService.sendSettingsNotFound();
     }
   }
 
   private async handleExecuteApi(message: IncomingMessage): Promise<void> {
-    console.log('EXECUTE_API');
+    Logger.log('EXECUTE_API', { 
+      apiNamespace: message.apiNamespace, 
+      action: message.action 
+    });
     
     try {
       const { apiNamespace, action, params, settings } = message;
@@ -132,7 +114,7 @@ export class MessageHandler {
       window.showInformationMessage(`${apiNamespace}.${action} executed successfully!`);
       
     } catch (error) {
-      console.error('Error executing API command:', error);
+      Logger.error('Error executing API command:', error);
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       this.messageService.sendApiExecutionError(errorMessage);

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import Logger from '../utils/Logger';
 
 // Initial state per il global state
 export const initialState = {
@@ -113,12 +114,11 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const handleMessage = (event) => {
       const message = event.data;
-      console.log('Received message from extension:', message);
+      Logger.debug('Received message from extension:', message);
       
       switch (message.command) {
         case 'GET_METADATA_INPUT_LIST_RESPONSE':
-          console.log('GET_METADATA_INPUT_LIST_RESPONSE');
-          console.log(JSON.stringify(message.metadataList));
+          Logger.debug('GET_METADATA_INPUT_LIST_RESPONSE', message.metadataList);
           
           // Determina se è per input generico, objects o recordtypes
           if (message.metadata === 'object') {
@@ -140,7 +140,7 @@ export function AppProvider({ children }) {
           break;
           
         case 'API_EXECUTION_RESULT':
-          console.log('API_EXECUTION_RESULT');
+          Logger.log('API_EXECUTION_RESULT');
           dispatch({ 
             type: 'SET_EXECUTION_RESULT', 
             payload: message.result 
@@ -148,7 +148,7 @@ export function AppProvider({ children }) {
           break;
         
         case 'API_EXECUTION_ERROR':
-          console.log('API_EXECUTION_ERROR');
+          Logger.error('API_EXECUTION_ERROR', message.error);
           dispatch({ 
             type: 'SET_EXECUTION_ERROR', 
             payload: message.error 
@@ -156,7 +156,7 @@ export function AppProvider({ children }) {
           break;
           
         default:
-          console.log('Unknown message command:', message.command);
+          Logger.warn('Unknown message command:', message.command);
       }
     };
 

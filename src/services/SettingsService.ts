@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { workspace } from 'vscode';
+import { Logger } from '../utilities/Logger';
 
 export interface EasySourcesSettings {
   'salesforce-xml-path'?: string;
@@ -19,26 +20,35 @@ export class SettingsService {
     try {
       const workspaceFolder = workspace.workspaceFolders?.[0];
       if (!workspaceFolder) {
+        Logger.warn('No workspace folder found');
         return { settings: null, workspacePath: null };
       }
 
       const workspacePath = workspaceFolder.uri.fsPath;
       const settingsPath = path.join(workspacePath, this.SETTINGS_FILENAME);
       
-      if (fs.existsSync(settingsPath)) {
-        const settingsContent = fs.readFileSync(settingsPath, 'utf8');
-        try {
-          const parsedSettings = JSON.parse(settingsContent);
-          return { settings: parsedSettings, workspacePath };
-        } catch (parseError) {
-          console.error('Error parsing settings file:', parseError);
-          return { settings: null, workspacePath };
-        }
-      } else {
+      if (!fs.existsSync(settingsPath)) {
+        Logger.warn(`Settings file not found at: ${settingsPath}`);
+        return { settings: null, workspacePath };
+      }
+
+      const settingsContent = fs.readFileSync(settingsPath, 'utf8');
+      
+      if (!settingsContent || settingsContent.trim() === '') {
+        Logger.error('Settings file is empty');
+        return { settings: null, workspacePath };
+      }
+
+      try {
+        const parsedSettings = JSON.parse(settingsContent);
+        Logger.log('Settings file loaded successfully');
+        return { settings: parsedSettings, workspacePath };
+      } catch (parseError) {
+        Logger.error('Error parsing settings file - invalid JSON:', parseError);
         return { settings: null, workspacePath };
       }
     } catch (error) {
-      console.error('Error reading settings file:', error);
+      Logger.error('Error reading settings file:', error);
       return { settings: null, workspacePath: null };
     }
   }
