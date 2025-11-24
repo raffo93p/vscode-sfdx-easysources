@@ -9,6 +9,7 @@ export const initialState = {
   availableRecordtypes: [],
   executionResult: null,
   executionError: null,
+  executedAction: null,
   isLoading: false,
   isExecuting: false,
   settings: null,
@@ -66,6 +67,7 @@ export function appReducer(state, action) {
       return {
         ...state,
         isExecuting: true,
+        executedAction: action.executedAction || null,
         executionResult: null,
         executionError: null
       };

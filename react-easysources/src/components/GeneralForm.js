@@ -12,6 +12,7 @@ import DeleteFields from './fields/DeleteFields';
 import AreAlignedFields from './fields/AreAlignedFields';
 import CustomUpsertFields from './fields/CustomUpsertFields';
 import { useAppContext } from '../context/AppContext';
+import { ACTION_DESCRIPTIONS } from '../constants/ActionDescriptions';
 
 /**
  * Componente principale del form per configurare ed eseguire i comandi
@@ -52,6 +53,7 @@ function GeneralForm({
                 options={optionsAct[formState.metadata]}
                 value={formState.action}
                 onChange={(event) => handleChangeSelect(event, "action")}
+                helpText={ACTION_DESCRIPTIONS[formState.action]}
               />
             </Grid>
           </Grid>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import MySelect from '../base/MySelect';
+import { ARE_ALIGNED_MODE_DESCRIPTIONS } from '../../constants/ActionDescriptions';
 
 /**
  * Componente per i campi specifici dell'azione Are Aligned
@@ -29,6 +30,7 @@ function AreAlignedFields({
           options={modeOptions}
           value={formState.mode}
           onChange={(event) => handleChangeSelect(event, "mode")}
+          helpText={ARE_ALIGNED_MODE_DESCRIPTIONS[formState.mode]}
         />
       </Grid>
     </Grid>

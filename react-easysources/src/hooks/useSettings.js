@@ -53,8 +53,11 @@ export function useApiExecution() {
   const { dispatch } = useAppContext();
   
   const executeCommand = (commandData) => {
-    // Impostiamo lo stato di esecuzione nel global state
-    dispatch({ type: ACTION_TYPES.SET_EXECUTING});
+    // Impostiamo lo stato di esecuzione nel global state, salvando l'action
+    dispatch({ 
+      type: ACTION_TYPES.SET_EXECUTING,
+      executedAction: commandData.action
+    });
     
     if (vscode && vscode.postMessage) {
       vscode.postMessage(commandData);

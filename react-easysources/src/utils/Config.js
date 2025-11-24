@@ -44,14 +44,14 @@ export const optionsAct = {
         ...baseActions,
         additionalActions.delete,
         additionalActions.minify,
-        additionalActions.clean,
+        //additionalActions.clean,
         additionalActions.customupsert
     ],
     'profiles': [
         ...baseActions,
         additionalActions.delete,
         additionalActions.minify,
-        additionalActions.clean,
+        //additionalActions.clean,
         additionalActions.customupsert
     ],
     'recordtypes': [
@@ -59,7 +59,7 @@ export const optionsAct = {
         baseActions[1], // upsert
         baseActions[2], // updatekey
         additionalActions.delete,
-        additionalActions.clean,
+        //additionalActions.clean,
         baseActions[3], // merge
         baseActions[4]  // arealigned
     ],

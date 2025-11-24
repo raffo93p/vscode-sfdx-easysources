@@ -52,7 +52,7 @@ export const customUpsertConfig = {
     key: 'apexPage'
   },
   recordTypeVisibilities: {
-    headers: ['default', 'personAccountDefault', 'recordType', 'visible'],
+    headers: ['recordType', 'visible'],
     key: 'recordType'
   },
   tabVisibilities: {

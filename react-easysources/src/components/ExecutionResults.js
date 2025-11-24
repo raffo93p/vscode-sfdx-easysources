@@ -9,7 +9,7 @@ import { useAppContext } from '../context/AppContext';
  */
 function ExecutionResults({ viewDebugInfo, action }) {
   const { state } = useAppContext();
-  const { executionResult, executionError } = state;
+  const { executionResult, executionError, executedAction } = state;
   
   if (executionError) {
     return (
@@ -45,6 +45,11 @@ function ExecutionResults({ viewDebugInfo, action }) {
                 <Typography variant="h6" component="div" style={{fontWeight: 'bold'}}>
                   Results Summary:
                 </Typography>
+                {executedAction && (
+                  <Typography variant="h6" component="span" style={{fontWeight: 'normal', marginRight: '0.5rem'}}>
+                    {executedAction}
+                  </Typography>
+                )}
                 <Box 
                   display="flex" 
                   alignItems="center" 
