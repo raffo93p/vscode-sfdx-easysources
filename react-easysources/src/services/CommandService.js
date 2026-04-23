@@ -31,7 +31,8 @@ export class CommandService {
     'delete': 'delete',
     'clean': 'clean',
     'arealigned': 'areAligned',
-    'customupsert': 'customUpsert'
+    'customupsert': 'customUpsert',
+    'clearempty': 'clearEmpty'
   };
 
   /**
@@ -95,7 +96,7 @@ export class CommandService {
           }
         });
         if (Object.keys(content).length > 0) {
-          params.content = content;
+          params.content = JSON.stringify(content);
         }
       }
     }

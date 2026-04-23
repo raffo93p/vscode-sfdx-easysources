@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.showPanel2"
+    "onCommand:sfvsc-easy-sources.showPanel"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -43,6 +43,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "sfdx-easy-sources": "^0.9.3"
+    "sfdx-easy-sources": "^0.9.5"
   }
 }

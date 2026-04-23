@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Applications
   - Object Translations
   - Translations
-  - All Metadata (bulk operations)
 - Support for all available actions:
   - Split: Convert XML to CSV format
   - Merge: Convert CSV back to XML
@@ -30,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Custom Upsert: Insert/update specific entries using JSON
   - Delete: Remove specific permissions or references
   - Minify: Clean up unnecessary entries
-  - Clean: Remove non-existent references
   - Clear Empty: Remove empty CSV files and folders
   - Are Aligned: Validate XML/CSV synchronization
   - Update Key: Refresh the `_tagid` column

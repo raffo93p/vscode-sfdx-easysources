@@ -24,7 +24,8 @@ const additionalActions = {
     minify: {label: 'Minify (on CSV)', value: 'minify'},
     delete: {label: 'Delete (on CSV)', value: 'delete'},
     clean: {label: 'Clean (on CSV)', value: 'clean'},
-    customupsert: {label: 'Custom Upsert (on CSV)', value: 'customupsert'}
+    customupsert: {label: 'Custom Upsert (on CSV)', value: 'customupsert'},
+    clearempty: {label: 'Clear Empty (on CSV)', value: 'clearempty'}
 };
 
 export const optionsAct = {
@@ -45,14 +46,16 @@ export const optionsAct = {
         additionalActions.delete,
         additionalActions.minify,
         //additionalActions.clean,
-        additionalActions.customupsert
+        additionalActions.customupsert,
+        additionalActions.clearempty
     ],
     'profiles': [
         ...baseActions,
         additionalActions.delete,
         additionalActions.minify,
         //additionalActions.clean,
-        additionalActions.customupsert
+        additionalActions.customupsert,
+        additionalActions.clearempty
     ],
     'recordtypes': [
         baseActions[0], // split
@@ -63,7 +66,10 @@ export const optionsAct = {
         baseActions[3], // merge
         baseActions[4]  // arealigned
     ],
-    'translations': [...baseActions]
+    'translations': [
+        ...baseActions,
+        additionalActions.clearempty
+    ]
 }
 
 function actionBasicParams(sort, canSelectInput) {
@@ -155,7 +161,8 @@ export const metadataAction_params = {
             'skip-types': ['Settings'] // TODO
         },
         'arealigned': { ...areAlignedActionConfig, selectInput: false },
-        'customupsert': { ...areAlignedActionConfig, sort: true, selectInput: false }
+        'customupsert': { ...areAlignedActionConfig, sort: true, selectInput: false },
+        'clearempty': {'selectInput': false}
     },
     'profiles': {
         ...actionBasicParams(true, true),
@@ -174,7 +181,8 @@ export const metadataAction_params = {
             'skip-types': ['Settings'] // TODO
         },
         'arealigned': { ...areAlignedActionConfig, selectInput: false },
-        'customupsert': { ...areAlignedActionConfig, sort: true, selectInput: false }
+        'customupsert': { ...areAlignedActionConfig, sort: true, selectInput: false },
+        'clearempty': {'selectInput': false}
     },
     'recordtypes': {
         'split': {'sort': true, 'selectObject': false, 'selectRecordtype': false},
@@ -197,7 +205,8 @@ export const metadataAction_params = {
     },
     'translations': { 
         ...actionBasicParams(false, true),
-        'arealigned': { ...areAlignedActionConfig, selectInput: false }
+        'arealigned': { ...areAlignedActionConfig, selectInput: false },
+        'clearempty': {'selectInput': false}
     }
 
 }
