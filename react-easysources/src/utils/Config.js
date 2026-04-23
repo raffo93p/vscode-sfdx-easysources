@@ -68,6 +68,7 @@ export const optionsAct = {
     ],
     'translations': [
         ...baseActions,
+        additionalActions.minify,
         additionalActions.clearempty
     ]
 }
@@ -204,7 +205,8 @@ export const metadataAction_params = {
         }
     },
     'translations': { 
-        ...actionBasicParams(false, true),
+        ...actionBasicParams(true, true),
+        'minify': {'sort': true, 'selectInput': false},
         'arealigned': { ...areAlignedActionConfig, selectInput: false },
         'clearempty': {'selectInput': false}
     }
