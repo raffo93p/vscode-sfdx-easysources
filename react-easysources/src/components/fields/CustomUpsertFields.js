@@ -21,7 +21,7 @@ function CustomUpsertFields({
   const typeOptions = getCustomUpsertTypeOptions();
   
   // Ottieni gli headers per il tipo selezionato
-  const headers = formState.customUpsertType ? getHeadersForType(formState.customUpsertType) : [];
+  const headers = formState.customUpsertType ? getHeadersForType(formState.customUpsertType, formState.metadata) : [];
 
   return (
     <Grid container spacing={2}>

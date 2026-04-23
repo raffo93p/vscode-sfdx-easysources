@@ -36,13 +36,23 @@ export const customUpsertConfig = {
     key: ['layout', 'recordType']
   },
   objectPermissions: {
-    headers: [
+    profileHeaders: [
       'allowCreate',
       'allowDelete',
       'allowEdit',
       'allowRead',
       'modifyAllRecords',
       'object',
+      'viewAllRecords'
+    ],
+    permissionSetHeaders: [
+      'allowCreate',
+      'allowDelete',
+      'allowEdit',
+      'allowRead',
+      'modifyAllRecords',
+      'object',
+      'viewAllFields',
       'viewAllRecords'
     ],
     key: 'object'
@@ -92,10 +102,19 @@ function formatLabel(key) {
 /**
  * Ottiene gli headers per un tipo specifico
  * @param {string} type - Tipo selezionato
+ * @param {string} metadata - Tipo di metadata (es. 'permissionsets', 'profiles')
  * @returns {Array} Array di headers
  */
-export const getHeadersForType = (type) => {
-  return customUpsertConfig[type]?.headers || [];
+export const getHeadersForType = (type, metadata) => {
+  const config = customUpsertConfig[type];
+  if (!config) return [];
+  if (metadata === 'permissionsets' && config.permissionSetHeaders) {
+    return config.permissionSetHeaders;
+  }
+  if (metadata === 'profiles' && config.profileHeaders) {
+    return config.profileHeaders;
+  }
+  return config.headers || [];
 };
 
 /**
