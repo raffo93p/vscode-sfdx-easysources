@@ -35,11 +35,8 @@ export const optionsAct = {
     'globalvaluesettranslations': [...baseActions],
     'labels': [...baseActions],
     'objecttranslations': [
-        baseActions[0], // split
-        baseActions[1], // upsert
-        additionalActions.minify,
-        baseActions[3], // merge
-        baseActions[4]  // arealigned
+         ...baseActions,
+        additionalActions.minify
     ],
     'permissionsets': [
         ...baseActions,
@@ -139,10 +136,8 @@ export const metadataAction_params = {
         'arealigned': { ...areAlignedActionConfig } // no selectInput
     },
     'objecttranslations': {
-        'split': {'sort': true, 'selectInput': false},
-        'upsert': {'sort': true, 'selectInput': false},
+        ...actionBasicParams(true, true),
         'minify': {'sort': true, 'selectInput': false},
-        'merge': {'sort': true, 'selectInput': false},
         'arealigned': { ...areAlignedActionConfig, selectInput: false }
     },
     'permissionsets': {
