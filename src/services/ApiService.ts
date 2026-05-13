@@ -1,12 +1,6 @@
 import { SettingsService, EasySourcesSettings } from './SettingsService';
 import { Logger } from '../utilities/Logger';
 
-// Import the sfdx-easy-sources API
-const {
-  profiles, permissionSets, labels, applications, 
-  globalValueSets, globalValueSetTranslations, objectTranslations, translations, recordTypes
-} = require('sfdx-easy-sources');
-
 export interface ApiExecutionParams {
   apiNamespace: string;
   action: string;
@@ -16,17 +10,28 @@ export interface ApiExecutionParams {
 }
 
 export class ApiService {
-  private static readonly API_MAP: { [key: string]: any } = {
-    'profiles': profiles,
-    'permissionSets': permissionSets,
-    'labels': labels,
-    'applications': applications,
-    'globalValueSets': globalValueSets,
-    'globalValueSetTranslations': globalValueSetTranslations,
-    'objectTranslations': objectTranslations,
-    'translations': translations,
-    'recordTypes': recordTypes
-  };
+  private static _apiMap: { [key: string]: any } | null = null;
+
+  private static async getApiMap(): Promise<{ [key: string]: any }> {
+    if (!ApiService._apiMap) {
+      const {
+        profiles, permissionSets, labels, applications,
+        globalValueSets, globalValueSetTranslations, objectTranslations, translations, recordTypes
+      } = await import('sfdx-easy-sources');
+      ApiService._apiMap = {
+        'profiles': profiles,
+        'permissionSets': permissionSets,
+        'labels': labels,
+        'applications': applications,
+        'globalValueSets': globalValueSets,
+        'globalValueSetTranslations': globalValueSetTranslations,
+        'objectTranslations': objectTranslations,
+        'translations': translations,
+        'recordTypes': recordTypes
+      };
+    }
+    return ApiService._apiMap;
+  }
 
   /**
    * Esegue un comando API
@@ -41,10 +46,12 @@ export class ApiService {
     Logger.debug('API params:', params);
     Logger.debug('Settings:', settings);
 
+    const apiMap = await ApiService.getApiMap();
+
     // Validate API namespace
-    const api = this.API_MAP[apiNamespace];
+    const api = apiMap[apiNamespace];
     if (!api) {
-      const error = `Unknown API namespace: ${apiNamespace}. Supported: ${this.getSupportedApiNamespaces().join(', ')}`;
+      const error = `Unknown API namespace: ${apiNamespace}. Supported: ${Object.keys(apiMap).join(', ')}`;
       Logger.error(error);
       throw new Error(error);
     }
@@ -86,15 +93,13 @@ export class ApiService {
    * @param apiNamespace Nome del namespace
    * @returns True se supportato, false altrimenti
    */
-  static isApiNamespaceSupported(apiNamespace: string): boolean {
-    return apiNamespace in this.API_MAP;
+  static async isApiNamespaceSupported(apiNamespace: string): Promise<boolean> {
+    const apiMap = await ApiService.getApiMap();
+    return apiNamespace in apiMap;
   }
 
-  /**
-   * Ottiene la lista dei namespace API supportati
-   * @returns Array dei namespace supportati
-   */
-  static getSupportedApiNamespaces(): string[] {
-    return Object.keys(this.API_MAP);
+  static async getSupportedApiNamespaces(): Promise<string[]> {
+    const apiMap = await ApiService.getApiMap();
+    return Object.keys(apiMap);
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Divider } from '@mui/material';
-import { optionsMdt, optionsAct } from '../utils/Config';
+import { optionsMdt, optionsAct, getAllActions, getMetadataForAction } from '../utils/Config';
 import MyMultiSelect from './base/MyMultiSelect';
 import MySelect from './base/MySelect';
 import MyCheckbox from './base/MyCheckbox';
@@ -39,23 +39,47 @@ function GeneralForm({
         {/* First Row - Metadata and Action on the left, Specify Metadata on the right */}
         <Grid item xs={8}>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <MySelect 
-                label="Metadata"
-                options={optionsMdt}
-                value={formState.metadata}
-                onChange={(event) => handleChangeSelect(event, "metadata")}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <MySelect 
-                label="Action"
-                options={optionsAct[formState.metadata]}
-                value={formState.action}
-                onChange={(event) => handleChangeSelect(event, "action")}
-                helpText={ACTION_DESCRIPTIONS[formState.action]}
-              />
-            </Grid>
+            {!formState.invertedMode ? (
+              <>
+                <Grid item xs={6}>
+                  <MySelect 
+                    label="Metadata"
+                    options={optionsMdt}
+                    value={formState.metadata}
+                    onChange={(event) => handleChangeSelect(event, "metadata")}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <MySelect 
+                    label="Action"
+                    options={optionsAct[formState.metadata]}
+                    value={formState.action}
+                    onChange={(event) => handleChangeSelect(event, "action")}
+                    helpText={ACTION_DESCRIPTIONS[formState.action]}
+                  />
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={6}>
+                  <MySelect 
+                    label="Action"
+                    options={getAllActions()}
+                    value={formState.action}
+                    onChange={(event) => handleChangeSelect(event, "action")}
+                    helpText={ACTION_DESCRIPTIONS[formState.action]}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <MySelect 
+                    label="Metadata"
+                    options={getMetadataForAction(formState.action)}
+                    value={formState.metadata}
+                    onChange={(event) => handleChangeSelect(event, "metadata")}
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
         </Grid>
         

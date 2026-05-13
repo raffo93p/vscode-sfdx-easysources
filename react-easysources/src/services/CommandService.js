@@ -96,7 +96,7 @@ export class CommandService {
           }
         });
         if (Object.keys(content).length > 0) {
-          params.content = JSON.stringify(content);
+          params.content = content;
         }
       }
     }

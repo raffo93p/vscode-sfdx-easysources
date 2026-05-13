@@ -33,7 +33,8 @@ export function useFormState() {
     // Campi per l'azione customupsert
     customUpsertType: '',
     customUpsertValues: {},
-    viewDebugInfo: false
+    viewDebugInfo: false,
+    invertedMode: false
   });
 
   const updateField = (field, value) => {
@@ -54,7 +55,109 @@ export function useFormState() {
     const updates = { [whatSelect]: value };
 
     if (whatSelect === "metadata") {
-      // Reset all dependent fields when metadata changes
+      if (!formState.invertedMode) {
+        // Modalità normale: metadata è primario, reset action e dipendenti
+        updates.action = '';
+        updates.sort = null;
+        updates.selectInput = null;
+        updates.selectedInput = null;
+        updates.selectObject = null;
+        updates.selectRecordtype = null;
+        updates.selectedObject = null;
+        updates.selectedRecordtype = null;
+        updates.type = '';
+        updates.tagid = '';
+        updates.picklist = '';
+        updates.apiname = '';
+        updates.mode = 'string';
+        updates.customUpsertType = '';
+        updates.customUpsertValues = {};
+        dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
+        dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
+      } else {
+        // Modalità invertita: metadata è secondario, applica config dell'action già selezionata
+        const action = formState.action;
+        const actionConfig = metadataAction_params[value]?.[action];
+        updates.sort = actionConfig?.sort ?? null;
+        updates.selectInput = actionConfig?.selectInput ?? null;
+        updates.selectObject = actionConfig?.selectObject ?? null;
+        updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
+        updates.type = '';
+        updates.tagid = '';
+        updates.picklist = '';
+        updates.apiname = '';
+        updates.mode = actionConfig?.mode ?? 'string';
+        updates.customUpsertType = '';
+        updates.customUpsertValues = {};
+        dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
+        dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
+      }
+    }
+
+    if (whatSelect === "selectedObject") {
+      // When object changes, clear recordtypes
+      updates.selectRecordtype = false;
+      updates.selectedRecordtype = null;
+    }
+
+    if (whatSelect === "customUpsertType") {
+      // When customUpsertType changes, clear customUpsertValues
+      updates.customUpsertValues = {};
+    }
+
+    if (whatSelect === "action") {
+      if (!formState.invertedMode) {
+        // Modalità normale: action è secondaria, applica config
+        const metadata = formState.metadata;
+        const action = value;
+        const actionConfig = metadataAction_params[metadata]?.[action];
+        updates.sort = actionConfig?.sort ?? null;
+        updates.selectInput = actionConfig?.selectInput ?? null;
+        updates.selectObject = actionConfig?.selectObject ?? null;
+        updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
+        updates.type = '';
+        updates.tagid = '';
+        updates.picklist = '';
+        updates.apiname = '';
+        updates.mode = actionConfig?.mode ?? 'string';
+        updates.customUpsertType = '';
+        updates.customUpsertValues = {};
+        const needsReload = formState.selectInput || formState.selectObject || formState.selectRecordtype;
+        if (needsReload) {
+          updates._reloadLists = true;
+        }
+      } else {
+        // Modalità invertita: action è primaria, reset metadata e dipendenti
+        updates.metadata = '';
+        updates.sort = null;
+        updates.selectInput = null;
+        updates.selectedInput = null;
+        updates.selectObject = null;
+        updates.selectRecordtype = null;
+        updates.selectedObject = null;
+        updates.selectedRecordtype = null;
+        updates.type = '';
+        updates.tagid = '';
+        updates.picklist = '';
+        updates.apiname = '';
+        updates.mode = 'string';
+        updates.customUpsertType = '';
+        updates.customUpsertValues = {};
+        dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
+        dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
+      }
+    }
+
+    setFormState(prev => ({ ...prev, ...updates }));
+  };
+
+  const handleChangeCheckbox = (event, whatCheckbox) => {
+    const checked = event.target.checked;
+    const updates = { [whatCheckbox]: checked };
+
+    if (whatCheckbox === "invertedMode") {
+      // Reset tutto quando si cambia modalità
+      updates.metadata = '';
       updates.action = '';
       updates.sort = null;
       updates.selectInput = null;
@@ -70,59 +173,9 @@ export function useFormState() {
       updates.mode = 'string';
       updates.customUpsertType = '';
       updates.customUpsertValues = {};
-      
-      // Reset global state
       dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
       dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
     }
-
-    if (whatSelect === "selectedObject") {
-      // When object changes, clear recordtypes
-      updates.selectRecordtype = false;
-      updates.selectedRecordtype = null;
-    }
-
-    if (whatSelect === "customUpsertType") {
-      // When customUpsertType changes, clear customUpsertValues
-      updates.customUpsertValues = {};
-    }
-
-    if (whatSelect === "action") {
-      const metadata = formState.metadata;
-      const action = value;
-      
-      const actionConfig = metadataAction_params[metadata]?.[action];
-      
-      updates.sort = actionConfig?.sort ?? null;
-      updates.selectInput = actionConfig?.selectInput ?? null;
-      updates.selectObject = actionConfig?.selectObject ?? null;
-      updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
-      
-      // Reset campi specifici quando cambia action
-      updates.type = '';
-      updates.tagid = '';
-      updates.picklist = '';
-      updates.apiname = '';
-      updates.mode = actionConfig?.mode ?? 'string';
-      updates.customUpsertType = '';
-      updates.customUpsertValues = {};
-      
-      // Ricarica le liste se le checkbox sono già spuntate
-      // Questo perché cambiando action, le liste disponibili potrebbero cambiare (XML vs CSV)
-      const needsReload = formState.selectInput || formState.selectObject || formState.selectRecordtype;
-      
-      if (needsReload) {
-        // Triggera il reload delle liste (verrà gestito in useEffect)
-        updates._reloadLists = true;
-      }
-    }
-
-    setFormState(prev => ({ ...prev, ...updates }));
-  };
-
-  const handleChangeCheckbox = (event, whatCheckbox) => {
-    const checked = event.target.checked;
-    const updates = { [whatCheckbox]: checked };
 
     if (whatCheckbox === "selectInput" && checked) {
       dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });

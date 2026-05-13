@@ -209,3 +209,26 @@ export const metadataAction_params = {
     }
 
 }
+
+/**
+ * Restituisce tutte le azioni uniche tra tutti i metadata (per la modalità invertita)
+ */
+export const getAllActions = () => {
+    const actionsMap = {};
+    Object.values(optionsAct).forEach(actions => {
+        actions.forEach(action => {
+            if (!actionsMap[action.value]) actionsMap[action.value] = action;
+        });
+    });
+    return Object.values(actionsMap);
+};
+
+/**
+ * Restituisce i metadata che supportano una determinata azione (per la modalità invertita)
+ */
+export const getMetadataForAction = (actionValue) => {
+    if (!actionValue) return [];
+    return optionsMdt.filter(mdt =>
+        optionsAct[mdt.value]?.some(a => a.value === actionValue)
+    );
+};

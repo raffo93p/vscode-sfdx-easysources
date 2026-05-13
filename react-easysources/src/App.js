@@ -100,6 +100,12 @@ function AppContent() {
               label="View Debug Info"
               size={12}
             />
+            <MyCheckbox
+              checked={formState.invertedMode}
+              onChange={(event) => handleChangeCheckbox(event, "invertedMode")}
+              label="Action First"
+              size={12}
+            />
             <Button 
               variant="contained" 
               color="primary" 
