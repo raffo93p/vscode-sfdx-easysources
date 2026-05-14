@@ -2,15 +2,9 @@ import { Disposable, Webview, WebviewPanel, window, Uri, ViewColumn, ExtensionCo
 import { WebviewMessageService } from '../services/WebviewMessageService';
 import { WebviewContentService } from '../services/WebviewContentService';
 import { MessageHandler } from '../handlers/MessageHandler';
+
 /**
- * This class manages the state and behavior of HelloWorld webview panels.
- *
- * It contains all the data and methods for:
- *
- * - Creating and rendering HelloWorld webview panels
- * - Properly cleaning up and disposing of webview resources when the panel is closed
- * - Setting the HTML (and by proxy CSS/JavaScript) content of the webview panel
- * - Setting message listeners so data can be passed between the webview and extension
+ * Manages the state and behavior of the EasySources webview panel.
  */
 export class EasySourcesPanel {
   public static currentPanel: EasySourcesPanel | undefined;

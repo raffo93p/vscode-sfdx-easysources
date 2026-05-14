@@ -23,14 +23,4 @@ export const OUTGOING_MESSAGE_TYPES = {
   API_EXECUTION_ERROR: 'API_EXECUTION_ERROR',
 } as const;
 
-/**
- * All message types (union of incoming and outgoing)
- */
-export const MESSAGE_TYPES = {
-  ...INCOMING_MESSAGE_TYPES,
-  ...OUTGOING_MESSAGE_TYPES,
-} as const;
 
-export type IncomingMessageType = typeof INCOMING_MESSAGE_TYPES[keyof typeof INCOMING_MESSAGE_TYPES];
-export type OutgoingMessageType = typeof OUTGOING_MESSAGE_TYPES[keyof typeof OUTGOING_MESSAGE_TYPES];
-export type MessageType = typeof MESSAGE_TYPES[keyof typeof MESSAGE_TYPES];

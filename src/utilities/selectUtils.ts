@@ -1,4 +1,4 @@
-import {readdirSync} from 'fs';
+import {readdirSync, Dirent} from 'fs';
 import { join } from 'path';
 import { Logger } from './Logger';
 
@@ -46,8 +46,8 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
         // read files from directory
         if(metadata === 'object') {
             const objects = readdirSync(join(workspacePath, defaultPath, metadataFolderMap['object']), { withFileTypes: true })
-                .filter(item => item.isDirectory())
-                .map(item => item.name);
+                .filter((item: Dirent) => item.isDirectory())
+                .map((item: Dirent) => item.name);
             return objects;
 
         } else if(metadata === 'recordtypes') {
@@ -56,18 +56,11 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
                 return [];
             }
             
-            // Per recordtypes, la struttura è diversa se stiamo cercando nei CSV (action='merge')
-            let recordTypesPath: string;
-            if (action === 'merge') {
-                // Struttura CSV: objects/<oggetto>/recordTypes/<recordtypes>
-                recordTypesPath = join(workspacePath, defaultPath, metadataFolderMap['object'], objectName, metadataFolderMap['recordtypes']);
-            } else {
-                // Struttura XML: objects/<oggetto>/recordTypes/<recordtypes>
-                recordTypesPath = join(workspacePath, defaultPath, metadataFolderMap['object'], objectName, metadataFolderMap['recordtypes']);
-            }
+            // Per recordtypes, la struttura è: objects/<oggetto>/recordTypes/<recordtypes>
+            const recordTypesPath = join(workspacePath, defaultPath, metadataFolderMap['object'], objectName, metadataFolderMap['recordtypes']);
 
             const recordTypes = readdirSync(recordTypesPath, { withFileTypes: true })
-                .filter(item => {
+                .filter((item: Dirent) => {
                     if (action === 'merge') {
                         // Nella cartella CSV, cerchiamo sottocartelle (ogni recordtype ha la sua cartella)
                         return item.isDirectory();
@@ -76,7 +69,7 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
                         return !item.isDirectory() && item.name.endsWith(metadataFilesuffixMap['recordtypes']);
                     }
                 })
-                .map(item => {
+                .map((item: Dirent) => {
                     if (action === 'merge') {
                         // Nei CSV restituiamo il nome della cartella
                         return item.name;
@@ -90,8 +83,8 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
         } else if(metadata === 'objecttranslations') {
             const objectTranslationsPath = join(workspacePath, defaultPath, metadataFolderMap['objecttranslations']);
             const objectTranslations = readdirSync(objectTranslationsPath, { withFileTypes: true })
-                .filter(item => item.isDirectory())
-                .map(item => item.name);
+                .filter((item: Dirent) => item.isDirectory())
+                .map((item: Dirent) => item.name);
             return objectTranslations;
 
         } else {
@@ -103,14 +96,14 @@ export function getMetadataList(workspacePath: string, settings: any, metadata :
                 // Nella cartella CSV, i metadata sono organizzati come sottocartelle
                 metadataPath = join(workspacePath, defaultPath, metadata);
                 files = readdirSync(metadataPath, { withFileTypes: true })
-                    .filter(item => item.isDirectory())
-                    .map(item => item.name);
+                    .filter((item: Dirent) => item.isDirectory())
+                    .map((item: Dirent) => item.name);
             } else {
                 // Nella cartella XML, i metadata sono file con estensione specifica
                 metadataPath = join(workspacePath, defaultPath, metadata);
                 files = readdirSync(metadataPath, { withFileTypes: true })
-                    .filter(item => !item.isDirectory() && item.name.endsWith(metadataFilesuffixMap[metadata]))
-                    .map(item => item.name.replace(`.${metadataFilesuffixMap[metadata]}`, ''));
+                    .filter((item: Dirent) => !item.isDirectory() && item.name.endsWith(metadataFilesuffixMap[metadata]))
+                    .map((item: Dirent) => item.name.replace(`.${metadataFilesuffixMap[metadata]}`, ''));
             }
             
             return files;

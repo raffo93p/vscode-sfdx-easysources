@@ -23,13 +23,7 @@ export const INCOMING_MESSAGE_TYPES = {
   API_EXECUTION_ERROR: 'API_EXECUTION_ERROR',
 };
 
-/**
- * All message types (union of incoming and outgoing)
- */
-export const MESSAGE_TYPES = {
-  ...OUTGOING_MESSAGE_TYPES,
-  ...INCOMING_MESSAGE_TYPES,
-};
+
 
 /**
  * Redux-like action types for AppContext reducer

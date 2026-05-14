@@ -37,9 +37,22 @@ export function useFormState() {
     invertedMode: false
   });
 
-  const updateField = (field, value) => {
-    setFormState(prev => ({ ...prev, [field]: value }));
-  };
+  const getResetFields = () => ({
+    sort: null,
+    selectInput: null,
+    selectedInput: null,
+    selectObject: null,
+    selectRecordtype: null,
+    selectedObject: null,
+    selectedRecordtype: null,
+    type: '',
+    tagid: '',
+    picklist: '',
+    apiname: '',
+    mode: 'string',
+    customUpsertType: '',
+    customUpsertValues: {}
+  });
 
   const setSelectedInput = (selected) => {
     setFormState(prev => ({ ...prev, selectedInput: selected.sort() }));
@@ -57,38 +70,26 @@ export function useFormState() {
     if (whatSelect === "metadata") {
       if (!formState.invertedMode) {
         // Modalità normale: metadata è primario, reset action e dipendenti
-        updates.action = '';
-        updates.sort = null;
-        updates.selectInput = null;
-        updates.selectedInput = null;
-        updates.selectObject = null;
-        updates.selectRecordtype = null;
-        updates.selectedObject = null;
-        updates.selectedRecordtype = null;
-        updates.type = '';
-        updates.tagid = '';
-        updates.picklist = '';
-        updates.apiname = '';
-        updates.mode = 'string';
-        updates.customUpsertType = '';
-        updates.customUpsertValues = {};
+        Object.assign(updates, { action: '', ...getResetFields() });
         dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
         dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
       } else {
         // Modalità invertita: metadata è secondario, applica config dell'action già selezionata
         const action = formState.action;
         const actionConfig = metadataAction_params[value]?.[action];
-        updates.sort = actionConfig?.sort ?? null;
-        updates.selectInput = actionConfig?.selectInput ?? null;
-        updates.selectObject = actionConfig?.selectObject ?? null;
-        updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
-        updates.type = '';
-        updates.tagid = '';
-        updates.picklist = '';
-        updates.apiname = '';
-        updates.mode = actionConfig?.mode ?? 'string';
-        updates.customUpsertType = '';
-        updates.customUpsertValues = {};
+        Object.assign(updates, {
+          sort: actionConfig?.sort ?? null,
+          selectInput: actionConfig?.selectInput ?? null,
+          selectObject: actionConfig?.selectObject ?? null,
+          selectRecordtype: actionConfig?.selectRecordtype ?? null,
+          type: '',
+          tagid: '',
+          picklist: '',
+          apiname: '',
+          mode: actionConfig?.mode ?? 'string',
+          customUpsertType: '',
+          customUpsertValues: {}
+        });
         dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
         dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
       }
@@ -111,38 +112,26 @@ export function useFormState() {
         const metadata = formState.metadata;
         const action = value;
         const actionConfig = metadataAction_params[metadata]?.[action];
-        updates.sort = actionConfig?.sort ?? null;
-        updates.selectInput = actionConfig?.selectInput ?? null;
-        updates.selectObject = actionConfig?.selectObject ?? null;
-        updates.selectRecordtype = actionConfig?.selectRecordtype ?? null;
-        updates.type = '';
-        updates.tagid = '';
-        updates.picklist = '';
-        updates.apiname = '';
-        updates.mode = actionConfig?.mode ?? 'string';
-        updates.customUpsertType = '';
-        updates.customUpsertValues = {};
+        Object.assign(updates, {
+          sort: actionConfig?.sort ?? null,
+          selectInput: actionConfig?.selectInput ?? null,
+          selectObject: actionConfig?.selectObject ?? null,
+          selectRecordtype: actionConfig?.selectRecordtype ?? null,
+          type: '',
+          tagid: '',
+          picklist: '',
+          apiname: '',
+          mode: actionConfig?.mode ?? 'string',
+          customUpsertType: '',
+          customUpsertValues: {}
+        });
         const needsReload = formState.selectInput || formState.selectObject || formState.selectRecordtype;
         if (needsReload) {
           updates._reloadLists = true;
         }
       } else {
         // Modalità invertita: action è primaria, reset metadata e dipendenti
-        updates.metadata = '';
-        updates.sort = null;
-        updates.selectInput = null;
-        updates.selectedInput = null;
-        updates.selectObject = null;
-        updates.selectRecordtype = null;
-        updates.selectedObject = null;
-        updates.selectedRecordtype = null;
-        updates.type = '';
-        updates.tagid = '';
-        updates.picklist = '';
-        updates.apiname = '';
-        updates.mode = 'string';
-        updates.customUpsertType = '';
-        updates.customUpsertValues = {};
+        Object.assign(updates, { metadata: '', ...getResetFields() });
         dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
         dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
       }
@@ -157,22 +146,7 @@ export function useFormState() {
 
     if (whatCheckbox === "invertedMode") {
       // Reset tutto quando si cambia modalità
-      updates.metadata = '';
-      updates.action = '';
-      updates.sort = null;
-      updates.selectInput = null;
-      updates.selectedInput = null;
-      updates.selectObject = null;
-      updates.selectRecordtype = null;
-      updates.selectedObject = null;
-      updates.selectedRecordtype = null;
-      updates.type = '';
-      updates.tagid = '';
-      updates.picklist = '';
-      updates.apiname = '';
-      updates.mode = 'string';
-      updates.customUpsertType = '';
-      updates.customUpsertValues = {};
+      Object.assign(updates, { metadata: '', action: '', ...getResetFields() });
       dispatch({ type: ACTION_TYPES.RESET_EXECUTION_STATE });
       dispatch({ type: ACTION_TYPES.CLEAR_LISTS });
     }
@@ -261,7 +235,6 @@ export function useFormState() {
 
   return {
     formState,
-    updateField,
     handleChangeSelect,
     handleChangeCheckbox,
     handleChangeText,

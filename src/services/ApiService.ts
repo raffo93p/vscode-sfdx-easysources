@@ -88,18 +88,5 @@ export class ApiService {
     }
   }
 
-  /**
-   * Valida se un namespace API è supportato
-   * @param apiNamespace Nome del namespace
-   * @returns True se supportato, false altrimenti
-   */
-  static async isApiNamespaceSupported(apiNamespace: string): Promise<boolean> {
-    const apiMap = await ApiService.getApiMap();
-    return apiNamespace in apiMap;
-  }
 
-  static async getSupportedApiNamespaces(): Promise<string[]> {
-    const apiMap = await ApiService.getApiMap();
-    return Object.keys(apiMap);
-  }
 }
