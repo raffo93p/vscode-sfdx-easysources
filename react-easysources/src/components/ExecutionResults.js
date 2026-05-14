@@ -7,7 +7,7 @@ import { useAppContext } from '../context/AppContext';
 /**
  * Componente per visualizzare i risultati dell'esecuzione
  */
-function ExecutionResults({ viewDebugInfo, action }) {
+function ExecutionResults({ action }) {
   const { state } = useAppContext();
   const { executionResult, executionError, executedAction } = state;
   
@@ -92,19 +92,6 @@ function ExecutionResults({ viewDebugInfo, action }) {
           </Grid>
         )}
 
-        {/* Debug Results Display */}
-        {viewDebugInfo && (
-        <Grid container spacing={2} style={{marginTop: '1rem'}}>
-          <Grid item xs={12}>
-            <Alert severity="success">
-              <strong>Execution Result:</strong>
-              <pre style={{whiteSpace: 'pre-wrap', marginTop: '0.5rem'}}>
-                {JSON.stringify(executionResult, null, 2)}
-              </pre>
-            </Alert>
-          </Grid>
-        </Grid>
-        )}
       </>
     );
   }

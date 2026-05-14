@@ -30,7 +30,7 @@ export default function MyMultiSelect({metadata, optionList, selectedOptions, se
   };
 
   return (
-    <div className="app" style={{ background: "#222", color: "#fff", padding: "1em" }}>
+    <div className="app" style={{ padding: "1em" }}>
       {/* <p>Available {metadata}</p> */}
       <div className="dropdown-container">
         <Select
@@ -45,50 +45,54 @@ export default function MyMultiSelect({metadata, optionList, selectedOptions, se
           styles={{
             control: (base) => ({
               ...base,
-              backgroundColor: "#333",
-              color: "#fff",
-              borderColor: "#444"
+              backgroundColor: 'var(--vscode-input-background)',
+              color: 'var(--vscode-input-foreground)',
+              borderColor: 'var(--vscode-input-border)',
             }),
             menu: (base) => ({
               ...base,
-              backgroundColor: "#333",
-              color: "#fff",
+              backgroundColor: 'var(--vscode-dropdown-background)',
+              color: 'var(--vscode-dropdown-foreground)',
               zIndex: 9999
             }),
             option: (base, state) => ({
               ...base,
-              backgroundColor: state.isSelected ? "#555" : state.isFocused ? "#444" : "#333",
-              color: "#fff"
+              backgroundColor: state.isSelected
+                ? 'var(--vscode-list-activeSelectionBackground)'
+                : state.isFocused
+                  ? 'var(--vscode-list-hoverBackground)'
+                  : 'var(--vscode-dropdown-background)',
+              color: state.isSelected
+                ? 'var(--vscode-list-activeSelectionForeground)'
+                : 'var(--vscode-dropdown-foreground)',
             }),
             multiValue: (base) => ({
               ...base,
-              backgroundColor: "#444",
-              color: "#fff"
+              backgroundColor: 'var(--vscode-badge-background)',
             }),
             multiValueLabel: (base) => ({
               ...base,
-              color: "#fff"
+              color: 'var(--vscode-badge-foreground)',
             }),
             multiValueRemove: (base) => ({
               ...base,
-              color: "#fff",
-              backgroundColor: "#555",
+              color: 'var(--vscode-badge-foreground)',
               ':hover': {
-                backgroundColor: "#666",
-                color: "#fff"
+                backgroundColor: 'var(--vscode-list-hoverBackground)',
+                color: 'var(--vscode-foreground)',
               }
             }),
             placeholder: (base) => ({
               ...base,
-              color: "#bbb"
+              color: 'var(--vscode-input-placeholderForeground)',
             }),
             singleValue: (base) => ({
               ...base,
-              color: "#fff"
+              color: 'var(--vscode-input-foreground)',
             }),
             input: (base) => ({
               ...base,
-              color: "#fff"
+              color: 'var(--vscode-input-foreground)',
             })
           }}
         />

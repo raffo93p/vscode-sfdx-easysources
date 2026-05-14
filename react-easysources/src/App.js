@@ -8,11 +8,9 @@ import GeneralForm from './components/GeneralForm';
 import { useSettings, useApiExecution } from './hooks/useSettings';
 import { useFormState } from './hooks/useFormState';
 import { useAppContext, AppProvider } from './context/AppContext';
-import { vscode } from "./index";
 import MyCheckbox from './components/base/MyCheckbox';
 import { CommandService } from './services/CommandService';
 import Logger from './utils/Logger';
-import { OUTGOING_MESSAGE_TYPES } from './constants/MessageTypes';
 
 
 // Componente interno che usa il context
@@ -34,13 +32,7 @@ function AppContent() {
   // Estraiamo i dati dal global state
   const { 
     settings,
-    workspacePath,
-    availableInput, 
-    availableObjects, 
-    availableRecordtypes,
     isExecuting,
-    executionResult,
-    executionError,
     isLoading
   } = state;
 
@@ -53,26 +45,6 @@ function AppContent() {
     },
   });
 
-  // Debug helper
-  const handleDebugState = () => {
-    if (vscode && vscode.postMessage) {
-      vscode.postMessage({ 
-        command: OUTGOING_MESSAGE_TYPES.DEBUG_LOG, 
-        data: JSON.stringify({ 
-          formState, 
-          settings, 
-          workspacePath,
-          availableInput,
-          availableObjects,
-          availableRecordtypes,
-          isExecuting,
-          executionResult,
-          executionError
-        }, null, 2) 
-      });
-    }
-  };
-
   if (isLoading) {
     return <div>Loading settings...</div>;
   }
@@ -84,22 +56,6 @@ function AppContent() {
           <img width={60} src={logo} alt="EasySources logo"/> 
           <h1 style={{paddingLeft:'1rem'}}>SFDX EasySources</h1>
           <div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-            {formState.viewDebugInfo && (
-              <Button 
-                size="small" 
-                variant="outlined" 
-                onClick={handleDebugState}
-                style={{height: 'fit-content'}}
-              >
-                Debug State
-              </Button>
-            )}
-            <MyCheckbox
-              checked={formState.viewDebugInfo}
-              onChange={(event) => handleChangeCheckbox(event, "viewDebugInfo")}
-              label="View Debug Info"
-              size={12}
-            />
             <MyCheckbox
               checked={formState.invertedMode}
               onChange={(event) => handleChangeCheckbox(event, "invertedMode")}

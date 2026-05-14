@@ -4,10 +4,8 @@ import { optionsMdt, optionsAct, getAllActions, getMetadataForAction } from '../
 import MyMultiSelect from './base/MyMultiSelect';
 import MySelect from './base/MySelect';
 import MyCheckbox from './base/MyCheckbox';
-import ApiPreview from './preview/ApiPreview';
 import CommandPreview from './preview/CommandPreview';
 import ExecutionResults from './ExecutionResults';
-import FormStateDebug from './preview/FormStateDebug';
 import DeleteFields from './fields/DeleteFields';
 import AreAlignedFields from './fields/AreAlignedFields';
 import CustomUpsertFields from './fields/CustomUpsertFields';
@@ -191,28 +189,13 @@ function GeneralForm({
       {/* Command Calculated - Always show in real-time */}
       <CommandPreview formState={formState} />
 
-      {/* Command Preview - only show if debug info is enabled */}
-      {formState.viewDebugInfo && (
-        <Grid container spacing={2} style={{marginTop: '1rem'}}>
-          <Grid item xs={12}>
-            <ApiPreview formState={formState} />
-          </Grid>
-        </Grid>
-      )}
-
       {/* Divider between preview and results */}
       <Divider sx={{ marginTop: '2rem', marginBottom: '1rem' }} />
 
       {/* Results Display */}
       <ExecutionResults 
-        viewDebugInfo={formState.viewDebugInfo}
         action={formState.action}
       />
-
-      {/* Form State Debug Info - only show if debug info is enabled */}
-      {formState.viewDebugInfo && (
-        <FormStateDebug formState={formState} />
-      )}
     </div>
   );
 }
