@@ -13,8 +13,14 @@ src/**
 **/tsconfig.json
 **/.eslintrc.json
 
-# Node modules at root
-node_modules/**
+# Node modules at root - excluded only dev deps (vsce includes production deps automatically)
+node_modules/.bin/**
+node_modules/@types/**
+node_modules/typescript/**
+node_modules/eslint/**
+node_modules/@typescript-eslint/**
+node_modules/npm-run-all/**
+node_modules/@vscode/**
 
 # Examples
 examples/**
