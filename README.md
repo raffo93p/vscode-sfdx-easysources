@@ -87,7 +87,7 @@ Each metadata type supports various actions (depending on the type):
 
 ## 📋 Requirements
 
-- **VS Code**: Version 1.50.0 or higher
+- **VS Code**: Version 1.86.0 or higher
 - **Node.js**: Version 18.x or higher
 - **sfdx-easy-sources**: Automatically installed as a dependency (v1.0.1+)
 - **Salesforce CLI**: Required for Salesforce operations
@@ -175,9 +175,9 @@ sf easysources settings init
 The settings file typically contains:
 ```json
 {
-  "sourcesPath": "./force-app/main/default",
-  "csvPath": "./force-app/main/default",
-  "logPath": "./logs"
+  "salesforce-xml-path": "./force-app/main/default",
+  "easysources-csv-path": "./force-app/main/csv",
+  "easysources-log-path": "./easysources/log"
 }
 ```
 
@@ -190,15 +190,6 @@ The settings file typically contains:
 ## 📝 Release Notes
 
 For detailed information about all releases, new features, bug fixes, and changes, please see the [**Release Notes**](./RELEASE_NOTES.md).
-
-### Latest Release - 0.0.1 (2025-11-24)
-
-Initial release of SF EasySources VS Code Extension:
-- Complete graphical interface for sfdx-easy-sources plugin
-- Support for all metadata types and actions
-- Real-time command preview
-- Execution results display
-- Comprehensive field validation and help text
 
 ## 🔗 Related Resources
 
