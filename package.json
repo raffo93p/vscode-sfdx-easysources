@@ -3,7 +3,8 @@
   "displayName": "SF EasySources",
   "publisher": "raffo93p",
   "description": "A vscode extension to easily run commands for the plugin sfdx-easy-sources",
-  "version": "0.0.3",
+  "version": "0.0.4",
+  "icon": "logo.png",
   "engines": {
     "vscode": "^1.86.0"
   },
