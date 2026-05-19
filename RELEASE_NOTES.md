@@ -1,6 +1,6 @@
-# Release Notes - SFDX EasySources VS Code Extension
+# Release Notes - SF EasySources VS Code Extension
 
-All notable changes to the "SFDX EasySources" extension will be documented in this file.
+All notable changes to the "SF EasySources" extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.1] - 2026-05-19
 
 ### Added
-- Initial release of SFDX EasySources VS Code Extension
+- Initial release of SF EasySources VS Code Extension
 - Complete graphical user interface for sfdx-easy-sources plugin
 - Support for all metadata types:
   - Profiles

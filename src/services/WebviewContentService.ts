@@ -1,4 +1,4 @@
-import { Uri, ExtensionContext } from 'vscode';
+import { Uri, ExtensionContext, Webview } from 'vscode';
 import * as path from 'path';
 import { getNonce } from '../utilities/getNonce';
 
@@ -16,15 +16,14 @@ export class WebviewContentService {
    * Genera il contenuto HTML per il webview React
    * @returns String contenente l'HTML da renderizzare
    */
-  getWebviewContent(): string {
+  getWebviewContent(webview: Webview): string {
     const manifest = require(path.join(this.extensionPath, "react-easysources", 'build', 'asset-manifest.json'));
     const mainScript = manifest['files']['main.js'];
     const mainStyle = manifest['files']['main.css'];
 
-    const scriptPathOnDisk = Uri.file(path.join(this.extensionPath, "react-easysources", 'build', mainScript));
-    const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' });
-    const stylePathOnDisk = Uri.file(path.join(this.extensionPath, "react-easysources", 'build', mainStyle));
-    const styleUri = stylePathOnDisk.with({ scheme: 'vscode-resource' });
+    const scriptUri = webview.asWebviewUri(Uri.file(path.join(this.extensionPath, "react-easysources", 'build', mainScript)));
+    const styleUri = webview.asWebviewUri(Uri.file(path.join(this.extensionPath, "react-easysources", 'build', mainStyle)));
+    const baseUri = webview.asWebviewUri(Uri.file(path.join(this.extensionPath, "react-easysources", 'build')));
 
     // Use a nonce to whitelist which scripts can be run
     const nonce = getNonce();
@@ -35,10 +34,10 @@ export class WebviewContentService {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
         <meta name="theme-color" content="#000000">
-        <title>SFDX EasySources</title>
+        <title>SF EasySources</title>
         <link rel="stylesheet" type="text/css" href="${styleUri}">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';style-src vscode-resource: 'unsafe-inline' http: https: data:;">
-        <base href="${Uri.file(path.join(this.extensionPath, "react-easysources", 'build')).with({ scheme: 'vscode-resource' })}/">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}'; style-src ${webview.cspSource} 'unsafe-inline';">
+        <base href="${baseUri}/">
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
         </script>

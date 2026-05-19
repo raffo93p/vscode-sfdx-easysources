@@ -32,7 +32,7 @@ export class EasySourcesPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Set the HTML content for the webview panel
-    this._panel.webview.html = this._contentService.getWebviewContent();
+    this._panel.webview.html = this._contentService.getWebviewContent(this._panel.webview);
 
     // Set an event listener to listen for messages passed from the webview context
     this._setWebviewMessageListener(this._panel.webview);
@@ -54,7 +54,7 @@ export class EasySourcesPanel {
         // Panel view type
         "showEasySources",
         // Panel title
-        "SFDX EasySources",
+        "SF EasySources",
         // The editor column the panel should be displayed in
         ViewColumn.One,
         // Extra panel configurations

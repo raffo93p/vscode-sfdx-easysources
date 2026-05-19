@@ -1,14 +1,14 @@
-<p align="center"><img src="./react-easysources/src/assets/sf_easysources_wordmark_full.png" alt="sfdx-easy-sources" width="400"/></p>)
+# SF EasySources - VS Code Extension
 
-# SFDX EasySources - VS Code Extension
+[![Version](https://img.shields.io/visual-studio-marketplace/v/raffo93p.sfvsc-easysources)](https://marketplace.visualstudio.com/items?itemName=raffo93p.sfvsc-easysources)
+[![Downloads](https://img.shields.io/visual-studio-marketplace/d/raffo93p.sfvsc-easysources)](https://marketplace.visualstudio.com/items?itemName=raffo93p.sfvsc-easysources)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/raffo93p.sfvsc-easysources)](https://marketplace.visualstudio.com/items?itemName=raffo93p.sfvsc-easysources)
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/YOUR-PUBLISHER.sfvsc-easy-sources)](https://marketplace.visualstudio.com/items?itemName=YOUR-PUBLISHER.sfvsc-easy-sources)
-[![Downloads](https://img.shields.io/visual-studio-marketplace/d/YOUR-PUBLISHER.sfvsc-easy-sources)](https://marketplace.visualstudio.com/items?itemName=YOUR-PUBLISHER.sfvsc-easy-sources)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/YOUR-PUBLISHER.sfvsc-easy-sources)](https://marketplace.visualstudio.com/items?itemName=YOUR-PUBLISHER.sfvsc-easy-sources)
+<p align="center"><img src="./react-easysources/src/assets/sf_easysources_wordmark_full.png" alt="sfdx-easy-sources" width="400"/></p>
 
 A powerful Visual Studio Code extension that provides a graphical user interface for the [sfdx-easy-sources](https://www.npmjs.com/package/sfdx-easy-sources) plugin. Simplify the management of Salesforce metadata sources with an intuitive interface, eliminating the need to remember complex command-line parameters.
 
-## 🚀 What is SFDX EasySources?
+## 🚀 What is SF EasySources?
 
 This VS Code extension acts as a visual frontend for the `sfdx-easy-sources` CLI plugin, allowing you to:
 
@@ -102,15 +102,15 @@ Each metadata type supports various actions (depending on the type):
    sf easysources settings init
    ```
 4. Open the command palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Windows/Linux)
-5. Search for "SFDX EasySources: Show Panel"
+5. Search for "SF EasySources: Show Panel"
 
 ## 📖 Usage
 
 ### Basic Workflow
 
 1. **Open the Panel**
-   - Command Palette → "SFDX EasySources: Show Panel"
-   - Or use the command: `sfvsc-easy-sources.showPanel`
+   - Command Palette → "SF EasySources: Show Panel"
+   - Or use the command: `sfvsc-easysources.showPanel`
 
 2. **Select Metadata Type**
    - Choose from profiles, permissionsets, labels, etc.
@@ -133,7 +133,7 @@ Each metadata type supports various actions (depending on the type):
 
 ### Example: Split All Profiles
 
-1. Open SFDX EasySources panel
+1. Open SF EasySources panel
 2. Metadata: `profiles`
 3. Action: `split`
 4. Click "Execute Command"
@@ -193,7 +193,7 @@ For detailed information about all releases, new features, bug fixes, and change
 
 ### Latest Release - 0.0.1 (2025-11-24)
 
-Initial release of SFDX EasySources VS Code Extension:
+Initial release of SF EasySources VS Code Extension:
 - Complete graphical interface for sfdx-easy-sources plugin
 - Support for all metadata types and actions
 - Real-time command preview
@@ -224,4 +224,4 @@ See the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Enjoy simplified Salesforce metadata management with SFDX EasySources!** 🎉
+**Enjoy simplified Salesforce metadata management with SF EasySources!** 🎉

@@ -5,9 +5,9 @@ import { EasySourcesPanel } from './panels/EasySourcesPanel';
  * This method is called when your extension is activated
  */
 export function activate(context: vscode.ExtensionContext) {
-	console.log('SFDX EasySources extension is now active!');
+	console.log('SF EasySources extension is now active!');
 
-	const disposable = vscode.commands.registerCommand('sfvsc-easy-sources.showPanel', () => {
+	const disposable = vscode.commands.registerCommand('sfvsc-easysources.showPanel', () => {
 		EasySourcesPanel.render(context);
 	});
 
