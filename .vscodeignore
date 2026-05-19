@@ -1,11 +1,29 @@
 .vscode/**
 .vscode-test/**
-src/**
+.vscode-test.*
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
+RELEASE_NOTES.md
+
+# TypeScript sources (compiled to out/)
+src/**
+**/*.ts
+**/*.map
 **/tsconfig.json
 **/.eslintrc.json
-**/*.map
-**/*.ts
-**/.vscode-test.*
+
+# Node modules at root
+node_modules/**
+
+# Examples
+examples/**
+
+# React sources - keep only build/
+react-easysources/src/**
+react-easysources/public/**
+react-easysources/node_modules/**
+react-easysources/.gitignore
+react-easysources/README.md
+react-easysources/package.json
+react-easysources/package-lock.json

@@ -1,6 +1,7 @@
 {
   "name": "sfvsc-easy-sources",
   "displayName": "sfvsc-easy-sources",
+  "publisher": "raffo93p",
   "description": "A vscode extension to easily run commands for the plugin sfdx-easy-sources",
   "version": "0.0.1",
   "engines": {
