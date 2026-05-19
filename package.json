@@ -1,9 +1,9 @@
 {
-  "name": "sfvsc-easy-sources",
-  "displayName": "sfvsc-easy-sources",
+  "name": "sfvsc-easysources",
+  "displayName": "SF EasySources",
   "publisher": "raffo93p",
   "description": "A vscode extension to easily run commands for the plugin sfdx-easy-sources",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.86.0"
   },
@@ -15,14 +15,14 @@
     "url": "https://github.com/raffo93p/vscode-sfdx-easysources"
   },
   "activationEvents": [
-    "onCommand:sfvsc-easy-sources.showPanel"
+    "onCommand:sfvsc-easysources.showPanel"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "sfvsc-easy-sources.showPanel",
-        "title": "SFDX EasySources: Show Panel"
+        "command": "sfvsc-easysources.showPanel",
+        "title": "SF EasySources: Show Panel"
       }
     ]
   },
