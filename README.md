@@ -1,3 +1,5 @@
+<p align="center"><img src="./react-easysources/src/assets/sf_easysources_wordmark_full.png" alt="sfdx-easy-sources" width="400"/></p>)
+
 # SFDX EasySources - VS Code Extension
 
 [![Version](https://img.shields.io/visual-studio-marketplace/v/YOUR-PUBLISHER.sfvsc-easy-sources)](https://marketplace.visualstudio.com/items?itemName=YOUR-PUBLISHER.sfvsc-easy-sources)
@@ -79,7 +81,6 @@ Each metadata type supports various actions (depending on the type):
 - Detailed validation reports
 
 #### Developer Features
-- **Debug mode**: View internal state and API calls
 - **Command preview**: See the exact CLI command that will be executed
 - **Execution results**: Detailed output with success/error information
 - **Inline help**: Contextual descriptions for each action
@@ -88,7 +89,7 @@ Each metadata type supports various actions (depending on the type):
 
 - **VS Code**: Version 1.50.0 or higher
 - **Node.js**: Version 18.x or higher
-- **sfdx-easy-sources**: Automatically installed as a dependency (v0.9.3+)
+- **sfdx-easy-sources**: Automatically installed as a dependency (v1.0.1+)
 - **Salesforce CLI**: Required for Salesforce operations
 - **easysources-settings.json**: Configuration file in your workspace (created via `sf easysources settings init`)
 
@@ -197,7 +198,6 @@ Initial release of SFDX EasySources VS Code Extension:
 - Support for all metadata types and actions
 - Real-time command preview
 - Execution results display
-- Debug mode for developers
 - Comprehensive field validation and help text
 
 ## 🔗 Related Resources
@@ -216,7 +216,6 @@ See the [LICENSE](LICENSE) file for details.
 
 ## 💡 Tips
 
-- Use the **Debug mode** (checkbox in the top right) to see internal state and API calls
 - The **command preview** shows you exactly what CLI command will run
 - Enable "Select [metadata]" only when you need to target specific items
 - For bulk operations, leave metadata selection unchecked to process all items

@@ -4,11 +4,15 @@
   "description": "A vscode extension to easily run commands for the plugin sfdx-easy-sources",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.50.0"
+    "vscode": "^1.86.0"
   },
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raffo93p/vscode-sfdx-easysources"
+  },
   "activationEvents": [
     "onCommand:sfvsc-easy-sources.showPanel"
   ],
@@ -43,6 +47,6 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "sfdx-easy-sources": "^1.0.0"
+    "sfdx-easy-sources": "^1.0.1"
   }
 }

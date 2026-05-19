@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-import logo from './assets/EasySources_Logo.png';
+import logo from './assets/logo.png';
 import './App.css'; 
 import GeneralForm from './components/GeneralForm';
 import { useSettings, useApiExecution } from './hooks/useSettings';
@@ -54,7 +54,7 @@ function AppContent() {
       <div className="HomePage">
         <header className="HomePage-header">
           <img width={60} src={logo} alt="EasySources logo"/> 
-          <h1 style={{paddingLeft:'1rem'}}>SFDX EasySources</h1>
+          <h1 style={{paddingLeft:'1rem'}}>SF EasySources</h1>
           <div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem'}}>
             <MyCheckbox
               checked={formState.invertedMode}
@@ -88,7 +88,7 @@ function AppContent() {
         </header>
             
         <div>
-          <p>Welcome to the SFDX EasySources project! From here you can compose and run sfdx-easy-sources commands.</p>
+          <p>Welcome to the SF EasySources project! From here you can compose and run sfdx-easy-sources commands.</p>
           <GeneralForm 
             formState={formState}
             handleChangeSelect={handleChangeSelect}
